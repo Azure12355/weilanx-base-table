@@ -1,0 +1,272 @@
+{
+  "name": "weilanx-base-table",
+  "displayName": "%displayName%",
+  "description": "%description%",
+  "version": "0.17.0",
+  "publisher": "weilanx",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Azure12355/weilanx-base-table.git"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "baseTable.open",
+        "title": "%command.open%",
+        "category": "%category%"
+      },
+      {
+        "command": "baseTable.create",
+        "title": "%command.create%",
+        "category": "%category%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "baseTable.refreshTree",
+        "title": "%command.refreshTree%",
+        "category": "%category%",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "baseTable.undo",
+        "title": "%command.undo%",
+        "category": "%category%"
+      },
+      {
+        "command": "baseTable.redo",
+        "title": "%command.redo%",
+        "category": "%category%"
+      },
+      {
+        "command": "baseTable.addRow",
+        "title": "%command.addRow%",
+        "category": "%category%"
+      },
+      {
+        "command": "baseTable.export",
+        "title": "%command.export%",
+        "category": "%category%"
+      },
+      {
+        "command": "baseTable.openKeybindings",
+        "title": "%command.openKeybindings%",
+        "category": "%category%",
+        "icon": "$(keyboard)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "weilanxBaseTable",
+          "title": "%viewsContainer.title%",
+          "icon": "media/base.svg"
+        }
+      ]
+    },
+    "views": {
+      "weilanxBaseTable": [
+        {
+          "id": "baseTable.files",
+          "name": "%view.files%",
+          "icon": "media/base.svg"
+        }
+      ]
+    },
+    "customEditors": [
+      {
+        "viewType": "baseTable.editor",
+        "displayName": "%customEditor.displayName%",
+        "selector": [
+          {
+            "filenamePattern": "*.base"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "baseTable.open",
+          "when": "!explorerResourceIsFolder && resourceExtname == .base",
+          "group": "navigation"
+        },
+        {
+          "command": "baseTable.create",
+          "when": "explorerResourceIsFolder",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "baseTable.create",
+          "when": "view == baseTable.files",
+          "group": "navigation"
+        },
+        {
+          "command": "baseTable.refreshTree",
+          "when": "view == baseTable.files",
+          "group": "navigation"
+        },
+        {
+          "command": "baseTable.openKeybindings",
+          "when": "view == baseTable.files",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "baseTable.undo",
+          "when": "activeCustomEditorId == 'baseTable.editor'"
+        },
+        {
+          "command": "baseTable.redo",
+          "when": "activeCustomEditorId == 'baseTable.editor'"
+        },
+        {
+          "command": "baseTable.addRow",
+          "when": "activeCustomEditorId == 'baseTable.editor'"
+        },
+        {
+          "command": "baseTable.export",
+          "when": "activeCustomEditorId == 'baseTable.editor'"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "%configuration.title%",
+      "properties": {
+        "baseTable.rowHeight": {
+          "type": "string",
+          "enum": [
+            "compact",
+            "medium",
+            "tall"
+          ],
+          "enumDescriptions": [
+            "%config.rowHeight.compact%",
+            "%config.rowHeight.medium%",
+            "%config.rowHeight.tall%"
+          ],
+          "default": "medium",
+          "description": "%config.rowHeight%"
+        },
+        "baseTable.showRowNumbers": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.showRowNumbers%"
+        },
+        "baseTable.fontSize": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "description": "%config.fontSize%"
+        },
+        "baseTable.colorfulTags": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.colorfulTags%"
+        },
+        "baseTable.wrapText": {
+          "type": "boolean",
+          "default": false,
+          "description": "%config.wrapText%"
+        },
+        "baseTable.keybindings": {
+          "type": "null",
+          "default": null,
+          "markdownDescription": "%config.keybindings%"
+        }
+      }
+    },
+    "languages": [
+      {
+        "id": "weilanx-base",
+        "aliases": [
+          "Weilanx Base Table",
+          "Weilanx 多维表格",
+          "Base Table"
+        ],
+        "extensions": [
+          ".base"
+        ],
+        "icon": {
+          "light": "./media/base-file.svg",
+          "dark": "./media/base-file.svg"
+        }
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "baseTable.undo",
+        "key": "ctrl+z",
+        "mac": "cmd+z",
+        "when": "activeCustomEditorId == 'baseTable.editor' && !sideBarFocus && !panelFocus && !auxiliaryBarFocus && !inQuickOpen"
+      },
+      {
+        "command": "baseTable.undo",
+        "key": "ctrl+z",
+        "mac": "ctrl+z",
+        "when": "activeCustomEditorId == 'baseTable.editor' && !sideBarFocus && !panelFocus && !auxiliaryBarFocus && !inQuickOpen"
+      },
+      {
+        "command": "baseTable.redo",
+        "key": "ctrl+y",
+        "mac": "cmd+shift+z",
+        "when": "activeCustomEditorId == 'baseTable.editor' && !sideBarFocus && !panelFocus && !auxiliaryBarFocus && !inQuickOpen"
+      },
+      {
+        "command": "baseTable.redo",
+        "key": "ctrl+shift+z",
+        "mac": "cmd+y",
+        "when": "activeCustomEditorId == 'baseTable.editor' && !sideBarFocus && !panelFocus && !auxiliaryBarFocus && !inQuickOpen"
+      },
+      {
+        "command": "baseTable.redo",
+        "key": "ctrl+y",
+        "mac": "ctrl+y",
+        "when": "activeCustomEditorId == 'baseTable.editor' && !sideBarFocus && !panelFocus && !auxiliaryBarFocus && !inQuickOpen"
+      },
+      {
+        "command": "baseTable.addRow",
+        "key": "ctrl+alt+n",
+        "mac": "cmd+alt+n",
+        "when": "activeCustomEditorId == 'baseTable.editor' && !sideBarFocus && !panelFocus && !auxiliaryBarFocus && !inQuickOpen"
+      }
+    ]
+  },
+  "scripts": {
+    "build:ext": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "build:web": "vite build",
+    "build": "npm run build:web && npm run build:ext",
+    "watch:ext": "npm run build:ext -- --watch",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test --import tsx test/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/vscode": "^1.90.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "esbuild": "^0.24.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ]
+}

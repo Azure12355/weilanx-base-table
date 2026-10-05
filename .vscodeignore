@@ -1,0 +1,15 @@
+.vscode/**
+src/**
+webview/**
+test/**
+docs/**
+examples/**
+node_modules/**
+**/*.ts
+**/*.map
+tsconfig*.json
+vite.config.ts
+.gitignore
+.playwright-cli/**
+.claude/**
+*.vsix

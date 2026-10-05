@@ -1,0 +1,1501 @@
+:root {
+  --bt-border: var(--vscode-widget-border, var(--vscode-panel-border, rgba(128, 128, 128, 0.25)));
+  --bt-border-soft: color-mix(in srgb, var(--bt-border) 55%, transparent);
+  /* 表头底色:用不透明的编辑器底色,避免滚动时下方内容透出来 */
+  --bt-header-solid: var(--vscode-editorWidget-background, var(--vscode-editor-background, #252526));
+  --bt-header-bg: var(--bt-header-solid);
+  --bt-hover: var(--vscode-list-hoverBackground, rgba(128, 128, 128, 0.1));
+  --bt-accent: var(--vscode-focusBorder, #0a84ff);
+  --bt-muted: var(--vscode-descriptionForeground, #999);
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+body {
+  font-family: var(--vscode-font-family, -apple-system, "PingFang SC", sans-serif);
+  font-size: var(--bt-font-size, var(--vscode-font-size, 13px));
+  color: var(--vscode-foreground, #ddd);
+  background: var(--vscode-editor-background, #1e1e1e);
+}
+
+.loading {
+  padding: 2rem;
+  color: var(--bt-muted);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ---------- 视图 Tab ---------- */
+.views {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px 0;
+  border-bottom: 1px solid var(--bt-border-soft);
+}
+.view {
+  background: transparent;
+  color: var(--vscode-foreground);
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 7px 14px;
+  margin-bottom: -1px;
+  cursor: pointer;
+  font-size: inherit;
+  border-radius: 5px 5px 0 0;
+  opacity: 0.75;
+}
+.view:hover {
+  background: var(--bt-hover);
+  opacity: 1;
+}
+.view.active {
+  border-bottom-color: var(--bt-accent);
+  opacity: 1;
+  font-weight: 600;
+}
+
+/* ---------- 工具栏 ---------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--bt-border-soft);
+}
+.tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  color: var(--vscode-foreground);
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 4px 9px;
+  cursor: pointer;
+  font-size: inherit;
+}
+.tool:hover {
+  background: var(--bt-hover);
+}
+.tool.on {
+  background: color-mix(in srgb, var(--bt-accent) 16%, transparent);
+  color: var(--bt-accent);
+}
+.tool.primary {
+  color: var(--vscode-textLink-foreground, var(--bt-accent));
+  font-weight: 600;
+}
+.tool-ico {
+  opacity: 0.85;
+}
+.spacer {
+  flex: 1;
+}
+.count {
+  color: var(--bt-muted);
+  padding: 0 6px;
+}
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--bt-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.seg button {
+  background: transparent;
+  color: var(--vscode-foreground);
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: inherit;
+  opacity: 0.7;
+}
+.seg button:hover {
+  background: var(--bt-hover);
+}
+.seg button.on {
+  background: color-mix(in srgb, var(--bt-accent) 18%, transparent);
+  color: var(--bt-accent);
+  opacity: 1;
+}
+
+/* ---------- 表格 ---------- */
+.table-wrap {
+  flex: 1;
+  overflow: auto;
+}
+table.grid {
+  position: relative; /* 作为 offsetParent,供表头测量冻结列真实左偏移 */
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed; /* 列宽由 colgroup 决定 */
+  width: max-content;
+  min-width: 100%;
+}
+/* 图标基线 */
+.icon {
+  flex: none;
+  display: inline-block;
+  vertical-align: -0.15em;
+}
+table.grid th,
+table.grid td {
+  border-right: 1px solid var(--bt-border-soft);
+  border-bottom: 1px solid var(--bt-border-soft);
+  text-align: left;
+  vertical-align: middle;
+  height: var(--bt-row-h, 38px);
+}
+table.grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  /* 底层铺一层不透明编辑器色,再叠表头色,确保完全不透明 */
+  background-color: var(--vscode-editor-background, #1e1e1e);
+  background-image: linear-gradient(var(--bt-header-bg), var(--bt-header-bg));
+  padding: 0 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--vscode-foreground) 85%, transparent);
+}
+.th-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+.th-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fico {
+  opacity: 0.6;
+  color: var(--vscode-foreground);
+}
+.pk {
+  color: var(--vscode-charts-yellow, #e2c08d);
+}
+
+/* 行号 / 拖拽把手列 */
+.rownum {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  text-align: center;
+  color: var(--bt-muted);
+  background: var(--vscode-editor-background, #1e1e1e);
+  font-variant-numeric: tabular-nums;
+  padding: 0;
+}
+.rownum .rn-num,
+.rownum .rn-hash {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.rownum .rn-grip {
+  display: none;
+  position: absolute;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  align-items: center;
+  justify-content: center;
+  color: var(--bt-muted);
+  cursor: grab;
+}
+.rownum .rn-grip:active {
+  cursor: grabbing;
+}
+/* 复选框:悬停行 / 已选中行 / 表头(悬停或已有选中)时替换行号 */
+.rownum .rn-check {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.rownum .rn-check input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--bt-accent);
+}
+tbody tr:hover .rownum .rn-num,
+tbody tr.row-selected .rownum .rn-num,
+thead tr:hover .rownum .rn-hash,
+thead .rownum.has-picked .rn-hash {
+  display: none;
+}
+tbody tr:hover .rownum .rn-grip {
+  display: inline-flex;
+}
+tbody tr:hover .rownum .rn-check,
+tbody tr.row-selected .rownum .rn-check,
+thead tr:hover .rownum .rn-check,
+thead .rownum.has-picked .rn-check {
+  display: inline-flex;
+}
+tbody tr.row-selected td,
+tbody tr.row-selected td.rownum {
+  background: color-mix(in srgb, var(--bt-accent) 10%, var(--vscode-editor-background, #1e1e1e));
+}
+/* 选中记录浮条 */
+.pick-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 8px;
+  background: var(--vscode-editorWidget-background, #252526);
+  border: 1px solid var(--vscode-editorWidget-border, rgba(128, 128, 128, 0.35));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.pick-count {
+  margin-right: 6px;
+  color: var(--vscode-foreground);
+}
+.pick-btn {
+  border: none;
+  background: transparent;
+  color: var(--vscode-foreground);
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font: inherit;
+}
+.pick-btn:hover {
+  background: var(--bt-hover);
+}
+.pick-btn.danger {
+  color: var(--vscode-errorForeground, #f14c4c);
+}
+.pick-toast {
+  color: var(--bt-accent);
+  padding: 0 6px;
+}
+tbody td.rownum {
+  cursor: grab;
+}
+thead .rownum {
+  z-index: 3;
+  background-color: var(--vscode-editor-background, #1e1e1e);
+  background-image: linear-gradient(var(--bt-header-bg), var(--bt-header-bg));
+}
+tbody tr:hover .rownum {
+  background: var(--bt-hover);
+}
+/* 行拖拽时的高亮 + 插入位置提示线 */
+tbody tr.drop-before td {
+  box-shadow: inset 0 2px 0 var(--bt-accent);
+}
+tbody tr.drop-after td {
+  box-shadow: inset 0 -2px 0 var(--bt-accent);
+}
+
+tbody td {
+  padding: 0;
+}
+tbody tr:hover td {
+  background: var(--bt-hover);
+}
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--bt-muted);
+}
+
+/* 单元格内容区 */
+.cellbox {
+  padding: 0 12px;
+  width: 100%;
+  min-height: var(--bt-row-h, 38px);
+  display: flex;
+  align-items: center;
+}
+.wrap .cellbox {
+  white-space: normal;
+  word-break: break-word;
+}
+.nowrap .cellbox {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 输入控件:融入单元格 */
+.cellbox input[type="text"],
+.cellbox input[type="number"],
+.cellbox input[type="date"] {
+  width: 100%;
+  background: transparent;
+  color: inherit;
+  border: none;
+  outline: none;
+  padding: 0;
+  font: inherit;
+  /* 未聚焦时放不下显示省略号;聚焦编辑时 Chrome 自动取消省略,可正常滚动查看 */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.cellbox input:focus {
+  outline: none;
+}
+td:focus-within {
+  box-shadow: inset 0 0 0 1.5px var(--bt-accent);
+}
+.cellbox input[type="checkbox"] {
+  margin: 0;
+  accent-color: var(--bt-accent);
+}
+
+/* ---------- 标签胶囊 ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 1px 10px;
+  font-size: 0.92em;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+.chips {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.wrap .chips {
+  flex-wrap: wrap;
+}
+.nowrap .chips {
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.placeholder {
+  color: var(--bt-muted);
+  opacity: 0.6;
+}
+
+/* 选择器弹层 */
+.pop {
+  position: absolute;
+  z-index: 20;
+  margin-top: 4px;
+  background: var(--vscode-editorWidget-background, #252526);
+  border: 1px solid var(--bt-border);
+  border-radius: 8px;
+  padding: 5px;
+  min-width: 150px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.pop .opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.pop .opt:hover {
+  background: var(--bt-hover);
+}
+.pop .opt input {
+  accent-color: var(--bt-accent);
+}
+
+.cell-select {
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* 长文本单元格 */
+.longtext-preview {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--bt-fg);
+}
+.longtext-pop {
+  width: 320px;
+  padding: 10px;
+}
+.longtext-area {
+  width: 100%;
+  min-height: 140px;
+  resize: vertical;
+  box-sizing: border-box;
+  background: var(--vscode-input-background, #1e1e1e);
+  color: var(--bt-fg);
+  border: 1px solid var(--bt-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font: inherit;
+  line-height: 1.6;
+}
+.longtext-area:focus {
+  outline: none;
+  border-color: var(--bt-accent);
+}
+.longtext-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+.cell-link a {
+  color: var(--vscode-textLink-foreground, #4daafc);
+  text-decoration: none;
+}
+.cell-link a:hover {
+  text-decoration: underline;
+}
+
+/* 操作列 */
+.ops {
+  width: 40px;
+  min-width: 40px;
+  text-align: center;
+}
+.mini {
+  background: transparent;
+  border: none;
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  opacity: 0;
+  padding: 3px;
+  border-radius: 4px;
+}
+tr:hover .mini {
+  opacity: 0.55;
+}
+.mini:hover {
+  opacity: 1 !important;
+  background: var(--bt-hover);
+}
+
+/* ---------- 浮层(筛选/排序)---------- */
+.tool-wrap {
+  position: relative;
+}
+.popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 50;
+  min-width: 380px;
+  background: var(--vscode-editorWidget-background, #252526);
+  border: 1px solid var(--bt-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.42);
+  padding: 12px 14px;
+}
+.pop-head {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.pop-match {
+  color: var(--bt-muted);
+  font-size: 0.9em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pop-empty {
+  color: var(--bt-muted);
+  font-size: 0.9em;
+  padding: 2px 0 8px;
+}
+.cond-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.cond {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cond-lead {
+  color: var(--bt-muted);
+  min-width: 34px;
+  font-size: 0.88em;
+}
+.popover select,
+.popover input {
+  background: var(--vscode-input-background, #3c3c3c);
+  color: var(--vscode-input-foreground, #ddd);
+  border: 1px solid var(--bt-border);
+  border-radius: 5px;
+  padding: 4px 7px;
+  font: inherit;
+  outline: none;
+}
+.popover select:focus,
+.popover input:focus {
+  border-color: var(--bt-accent);
+}
+.cond-field {
+  width: 98px;
+}
+.cond-op {
+  width: 80px;
+}
+.cond-val {
+  flex: 1;
+  min-width: 90px;
+}
+.cond-val.ghost {
+  background: transparent;
+  border: none;
+}
+.pop-add {
+  align-self: flex-start;
+  background: transparent;
+  color: var(--vscode-textLink-foreground, var(--bt-accent));
+  border: none;
+  cursor: pointer;
+  padding: 8px 0 2px;
+  font: inherit;
+}
+.pop-add:hover {
+  text-decoration: underline;
+}
+.pop-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid var(--bt-border-soft);
+}
+.pop-link {
+  background: transparent;
+  border: none;
+  color: var(--vscode-textLink-foreground, var(--bt-accent));
+  cursor: pointer;
+  font: inherit;
+  padding: 2px 4px;
+}
+.pop-link:hover {
+  text-decoration: underline;
+}
+.pop-link.danger {
+  color: var(--vscode-errorForeground, #f14c4c);
+}
+.pop-link:disabled {
+  opacity: 0.4;
+  cursor: default;
+  text-decoration: none;
+}
+.seg.small button {
+  padding: 3px 10px;
+}
+
+/* ---------- 视图 Tab 管理 ---------- */
+.view-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.view-tab[draggable="true"] {
+  cursor: grab;
+}
+.view-tab.view-over::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--bt-accent);
+}
+.view-menu-btn {
+  background: transparent;
+  border: none;
+  color: var(--vscode-foreground);
+  opacity: 0;
+  cursor: pointer;
+  padding: 2px 5px;
+  margin-left: -8px;
+  border-radius: 4px;
+}
+.view-tab:hover .view-menu-btn {
+  opacity: 0.55;
+}
+.view-menu-btn:hover {
+  opacity: 1;
+  background: var(--bt-hover);
+}
+.view-add {
+  background: transparent;
+  border: none;
+  color: var(--bt-muted);
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-bottom: -1px;
+}
+.view-add:hover {
+  background: var(--bt-hover);
+  color: var(--vscode-foreground);
+}
+.view-rename {
+  background: var(--vscode-input-background, #3c3c3c);
+  color: var(--vscode-input-foreground, #ddd);
+  border: 1px solid var(--bt-accent);
+  border-radius: 5px;
+  padding: 5px 8px;
+  font: inherit;
+  width: 110px;
+  margin: 2px 4px;
+}
+.menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 60;
+  min-width: 124px;
+  background: var(--vscode-editorWidget-background, #252526);
+  border: 1px solid var(--bt-border);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.38);
+  padding: 4px;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.menu-item:hover {
+  background: var(--bt-hover);
+}
+.menu-ico {
+  opacity: 0.7;
+  color: var(--vscode-foreground);
+}
+.menu-item.danger .menu-ico {
+  color: var(--vscode-errorForeground, #f14c4c);
+}
+.menu-item.danger {
+  color: var(--vscode-errorForeground, #f14c4c);
+}
+.menu-item.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ---------- 字段头:菜单触发 + 列宽拖拽 + 新增字段 ---------- */
+.th-inner {
+  cursor: pointer;
+}
+.th-name {
+  flex: 1;
+}
+.th-caret {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  padding-left: 4px;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+table.grid thead th:hover .th-caret {
+  opacity: 0.6;
+}
+.caret-svg {
+  color: currentColor;
+  opacity: 0.8;
+}
+.col-resize {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 4;
+}
+.col-resize:hover {
+  background: var(--bt-accent);
+  opacity: 0.4;
+}
+.addcol {
+  width: 40px;
+  min-width: 40px;
+}
+.addcol-btn {
+  background: transparent;
+  border: none;
+  color: var(--bt-muted);
+  cursor: pointer;
+  padding: 4px 9px;
+  border-radius: 4px;
+}
+.addcol-btn:hover {
+  background: var(--bt-hover);
+  color: var(--vscode-foreground);
+}
+
+/* 对齐:flex 子项 + 输入框内文本 + 多选 chips 一起生效 */
+.align-center .cellbox {
+  justify-content: center;
+  text-align: center;
+}
+.align-right .cellbox {
+  justify-content: flex-end;
+  text-align: right;
+}
+.align-center .cellbox input,
+.align-center .num-text,
+.align-center .longtext-preview {
+  text-align: center;
+}
+.align-right .cellbox input,
+.align-right .num-text,
+.align-right .longtext-preview {
+  text-align: right;
+}
+.align-center .chips {
+  justify-content: center;
+}
+.align-right .chips {
+  justify-content: flex-end;
+}
+
+/* 字段菜单:对齐行 */
+.field-menu {
+  min-width: 182px;
+}
+.menu-sep {
+  height: 1px;
+  background: var(--bt-border-soft);
+  margin: 4px 0;
+}
+.menu-align {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+}
+.menu-align-label {
+  color: var(--bt-muted);
+  font-size: 0.9em;
+  margin-right: auto;
+}
+.menu-align button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--bt-border);
+  border-radius: 4px;
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  padding: 4px 10px;
+}
+.menu-align button.on {
+  background: color-mix(in srgb, var(--bt-accent) 18%, transparent);
+  color: var(--bt-accent);
+  border-color: var(--bt-accent);
+}
+
+/* ---------- 字段编辑弹窗 ---------- */
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background: var(--vscode-editorWidget-background, #252526);
+  border: 1px solid var(--bt-border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  width: 360px;
+  max-height: 82vh;
+  overflow: auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+.modal-title {
+  font-weight: 600;
+  font-size: 1.05em;
+  margin-bottom: 12px;
+}
+.fld-label {
+  display: block;
+  color: var(--bt-muted);
+  font-size: 0.88em;
+  margin: 11px 0 5px;
+}
+.fld-label.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.fld-input {
+  width: 100%;
+  background: var(--vscode-input-background, #3c3c3c);
+  color: var(--vscode-input-foreground, #ddd);
+  border: 1px solid var(--bt-border);
+  border-radius: 6px;
+  padding: 6px 9px;
+  font: inherit;
+  outline: none;
+}
+.fld-input:focus {
+  border-color: var(--bt-accent);
+}
+.opt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+.opt-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.opt-color {
+  width: 82px;
+  background: var(--vscode-input-background, #3c3c3c);
+  color: var(--vscode-input-foreground, #ddd);
+  border: 1px solid var(--bt-border);
+  border-radius: 5px;
+  padding: 5px 6px;
+  font: inherit;
+}
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+.btn {
+  background: var(--vscode-button-secondaryBackground, #3a3a3a);
+  color: var(--vscode-button-secondaryForeground, #fff);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font: inherit;
+}
+.btn.primary {
+  background: var(--vscode-button-background, #0a84ff);
+  color: var(--vscode-button-foreground, #fff);
+}
+.btn:hover {
+  opacity: 0.9;
+}
+
+/* ---------- 微交互:过渡动画(让切换更丝滑)---------- */
+.view,
+.tool,
+.seg button,
+.view-add,
+.view-menu-btn,
+.mini,
+.menu-item,
+.addcol-btn,
+.pop-link,
+.btn,
+.chip,
+.tag {
+  transition: background-color 0.13s ease, color 0.13s ease, opacity 0.13s ease, border-color 0.13s ease;
+}
+table.grid td {
+  transition: background-color 0.1s ease;
+}
+.cond select,
+.cond input,
+.fld-input,
+.opt-color,
+.popover select,
+.popover input {
+  transition: border-color 0.13s ease, box-shadow 0.13s ease;
+}
+td:focus-within {
+  transition: box-shadow 0.12s ease;
+}
+.col-resize {
+  transition: background-color 0.12s ease;
+}
+/* 浮层 / 菜单 / 弹窗淡入 */
+.popover,
+.menu {
+  animation: bt-pop 0.13s ease;
+}
+.modal {
+  animation: bt-pop 0.17s ease;
+}
+.modal-mask {
+  animation: bt-fade 0.16s ease;
+}
+@keyframes bt-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes bt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- 字段编辑:类型网格 + 选项拖拽 + 颜色选择器 ---------- */
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 4px;
+}
+.type-opt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: var(--vscode-input-background, #3c3c3c);
+  border: 1px solid var(--bt-border);
+  border-radius: 6px;
+  padding: 7px 6px;
+  cursor: pointer;
+  color: var(--vscode-foreground);
+  font: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.type-opt:hover {
+  background: var(--bt-hover);
+}
+.type-opt.on {
+  border-color: var(--bt-accent);
+  background: color-mix(in srgb, var(--bt-accent) 14%, transparent);
+  color: var(--bt-accent);
+}
+.type-ico {
+  opacity: 0.75;
+}
+
+.opt-handle {
+  cursor: grab;
+  color: var(--bt-muted);
+  opacity: 0.5;
+  user-select: none;
+  padding: 0 2px;
+}
+.opt-handle:hover {
+  opacity: 1;
+}
+.opt-row.dragging {
+  opacity: 0.45;
+}
+
+.color-pick {
+  position: relative;
+  flex: none;
+}
+.color-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  transition: box-shadow 0.12s ease, transform 0.1s ease;
+}
+.color-dot:hover {
+  transform: scale(1.12);
+}
+.color-dot.on {
+  box-shadow: 0 0 0 2px var(--vscode-editorWidget-background), 0 0 0 3.5px var(--bt-accent);
+}
+.color-dot.auto {
+  background: var(--vscode-input-background, #3c3c3c);
+  border: 1px solid var(--bt-border);
+  font-size: 0.7em;
+  color: var(--bt-muted);
+}
+.color-pop {
+  position: absolute;
+  z-index: 30;
+  top: 25px;
+  left: 0;
+  display: flex;
+  gap: 6px;
+  background: var(--vscode-editorWidget-background, #252526);
+  border: 1px solid var(--bt-border);
+  border-radius: 8px;
+  padding: 7px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.42);
+  animation: bt-pop 0.12s ease;
+}
+
+/* ---------- 数字字段配置 ---------- */
+.num-cfg {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+.num-cfg-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--vscode-foreground);
+}
+.num-cfg-item.check {
+  cursor: pointer;
+}
+.num-cfg-item.check input {
+  accent-color: var(--bt-accent);
+}
+.fld-select {
+  background: var(--vscode-input-background, #3c3c3c);
+  color: var(--vscode-foreground);
+  border: 1px solid var(--bt-border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font: inherit;
+}
+.fld-input.sm {
+  width: 56px;
+}
+.type-opt.wide {
+  justify-content: center;
+}
+
+/* 数字/日期单元格:只读态点击进入编辑 */
+.cell-click {
+  cursor: text;
+}
+.num-text {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 冻结列 ---------- */
+table.grid td.sticky,
+table.grid th.sticky {
+  position: sticky;
+  z-index: 1;
+  background: var(--vscode-editor-background, #1e1e1e);
+}
+table.grid thead th.sticky {
+  z-index: 4;
+  background-color: var(--vscode-editor-background, #1e1e1e);
+  background-image: linear-gradient(var(--bt-header-bg), var(--bt-header-bg));
+}
+tbody tr:hover td.sticky {
+  background: var(--bt-hover, #2a2d2e);
+}
+/* 选中行:冻结列也要高亮(冻结列需不透明底色,用 color-mix 叠在编辑器底色上) */
+tbody tr.row-selected td.sticky,
+tbody tr.row-selected:hover td {
+  background: color-mix(in srgb, var(--bt-accent) 10%, var(--vscode-editor-background, #1e1e1e));
+}
+table.grid td.sticky-edge,
+table.grid th.sticky-edge {
+  box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.35);
+}
+/* 正在打开弹层的单元格拔高层级,避免被其它(冻结)单元格盖住 */
+table.grid td.sticky:has(.pop) {
+  z-index: 60;
+}
+table.grid td:not(.sticky):has(.pop) {
+  position: relative;
+  z-index: 60;
+}
+.frozen-dot {
+  color: var(--vscode-charts-blue, #4a9eff);
+  opacity: 0.85;
+}
+
+/* ---------- 分组 ---------- */
+tr.group-head td.group-head-cell {
+  position: sticky;
+  left: 0;
+  background: var(--bt-header-bg);
+  padding: 0 14px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--vscode-foreground);
+  height: var(--bt-row-h, 38px);
+  user-select: none;
+}
+tr.group-head:hover td.group-head-cell {
+  background: var(--bt-hover);
+}
+.group-caret {
+  display: inline-block;
+  width: 1.2em;
+  color: var(--bt-muted);
+}
+.group-field {
+  color: var(--bt-muted);
+  margin-right: 6px;
+  font-weight: 500;
+}
+.group-name {
+  color: var(--bt-accent);
+}
+.group-count {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--vscode-foreground) 12%, transparent);
+  color: var(--bt-muted);
+  font-size: 0.82em;
+  font-weight: 500;
+}
+
+/* 分组面板 */
+.group-pop {
+  min-width: 260px;
+}
+
+/* ---------- 选择器弹层:选项 + 勾选态 ---------- */
+.select-pop {
+  min-width: 170px;
+  padding: 6px;
+}
+.select-pop .opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+.select-pop .opt:hover {
+  background: var(--bt-hover, #2a2d2e);
+}
+.select-pop .opt.on {
+  background: color-mix(in srgb, var(--bt-accent) 12%, transparent);
+}
+.opt-check {
+  width: 14px;
+  flex: none;
+  text-align: center;
+  color: var(--bt-accent);
+  font-size: 0.86em;
+}
+.select-pop .opt.clear .placeholder {
+  opacity: 0.8;
+}
+
+/* ---------- 日期单元格 ---------- */
+.cell-date .date-ico {
+  margin-right: 6px;
+  opacity: 0.55;
+  font-size: 0.86em;
+}
+.cellbox input[type="date"] {
+  color-scheme: light dark;
+  accent-color: var(--bt-accent);
+}
+
+/* ---------- 复选框列:收窄 + 居中 ---------- */
+.col-check {
+  min-width: 48px;
+}
+.cell-check {
+  justify-content: center;
+}
+.cell-check input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+/* ---------- 列拖拽换位反馈 ---------- */
+table.grid thead th[draggable="true"] {
+  cursor: default;
+}
+table.grid thead th.col-dragging {
+  opacity: 0.4;
+}
+table.grid thead th.col-over {
+  box-shadow: inset 2px 0 0 var(--bt-accent);
+}
+
+/* ---------- 行操作列:上下移动 + 删除(悬浮显示) ---------- */
+.ops {
+  width: 84px;
+  min-width: 84px;
+}
+.ops-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+tbody tr:hover .ops-inner {
+  opacity: 1;
+}
+.ops-inner .mini {
+  padding: 2px 5px;
+  border-radius: 4px;
+  line-height: 1;
+}
+.mini.danger:hover {
+  color: var(--vscode-errorForeground, #f14c4c);
+}
+
+/* ---------- 字段配置面板 ---------- */
+.fields-pop {
+  min-width: 300px;
+  max-height: 420px;
+  overflow: auto;
+  padding: 8px;
+}
+.fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 4px 0 8px;
+}
+.fields-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px;
+  border-radius: 6px;
+}
+.fields-row:hover {
+  background: var(--bt-hover, #2a2d2e);
+}
+.fields-row.dragging {
+  opacity: 0.45;
+}
+.fields-handle {
+  cursor: grab;
+  color: var(--bt-muted);
+  opacity: 0.5;
+  user-select: none;
+}
+.fields-handle:hover {
+  opacity: 1;
+}
+.fields-ico {
+  opacity: 0.65;
+}
+.fields-name {
+  flex: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.fields-name:hover {
+  color: var(--bt-accent);
+}
+.fields-type {
+  color: var(--bt-muted);
+  font-size: 0.82em;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--vscode-foreground) 10%, transparent);
+}
+.fields-edit,
+.fields-eye {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--bt-muted);
+  padding: 3px 5px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+.fields-edit:hover,
+.fields-eye:hover {
+  background: var(--bt-hover, #2a2d2e);
+  color: var(--vscode-foreground);
+}
+.fields-eye.off {
+  opacity: 0.5;
+}
+.fields-eye:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+/* 视图菜单触发箭头对齐 */
+.view-menu-btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ---------- 导出弹窗 ---------- */
+.export-modal {
+  width: 340px;
+}
+.export-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+.export-opt {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-align: left;
+  background: var(--vscode-input-background, #3c3c3c);
+  border: 1px solid var(--bt-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  color: var(--vscode-foreground);
+  font: inherit;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+.export-opt:hover {
+  background: var(--bt-hover);
+}
+.export-opt.on {
+  border-color: var(--bt-accent);
+  background: color-mix(in srgb, var(--bt-accent) 12%, transparent);
+}
+.export-radio {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--bt-muted);
+  position: relative;
+}
+.export-opt.on .export-radio {
+  border-color: var(--bt-accent);
+}
+.export-opt.on .export-radio::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--bt-accent);
+}
+.export-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.export-name {
+  font-weight: 600;
+}
+.export-desc {
+  color: var(--bt-muted);
+  font-size: 0.85em;
+}
+
+/* ---------- hover 展开:内容截断时悬停弹出完整内容(飞书式) ---------- */
+.cell-expand {
+  position: fixed;
+  z-index: 70;
+  pointer-events: none; /* 纯视觉,点击穿透到下方单元格,不影响编辑 */
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  background: var(--vscode-editor-background, #1e1e1e);
+  border: 1px solid var(--bt-accent);
+  border-radius: 4px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  max-width: 460px;
+  animation: bt-fade 0.1s ease;
+}
+.cell-expand-inner {
+  width: 100%;
+  padding: 6px 11px;
+  line-height: 1.55;
+  color: var(--vscode-foreground);
+}
+.cell-expand-inner.align-center {
+  text-align: center;
+}
+.cell-expand-inner.align-right {
+  text-align: right;
+}
+.cell-expand .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.cell-expand-inner.align-center .chips {
+  justify-content: center;
+}
+.cell-expand-inner.align-right .chips {
+  justify-content: flex-end;
+}
+.expand-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.expand-link {
+  color: var(--vscode-textLink-foreground, #4daafc);
+  word-break: break-all;
+}
+
+/* 工具栏纯图标按钮 + 禁用态(撤销/重做) */
+.tool.icon-only {
+  padding: 5px 7px;
+}
+.tool:disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+td.rownum:focus-within {
+  box-shadow: none;
+}

@@ -1,0 +1,7 @@
+node_modules/
+out/
+*.vsix
+.DS_Store
+.playwright-cli/
+.claude/
+.playwright-cli/
