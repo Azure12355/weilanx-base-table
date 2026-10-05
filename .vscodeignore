@@ -13,3 +13,6 @@ vite.config.ts
 .playwright-cli/**
 .claude/**
 *.vsix
+media/readme/**
+media/logo.svg
+README.zh-CN.md

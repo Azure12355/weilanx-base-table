@@ -4,6 +4,7 @@
   "description": "%description%",
   "version": "0.17.0",
   "publisher": "weilanx",
+  "icon": "media/logo.png",
   "license": "MIT",
   "repository": {
     "type": "git",
