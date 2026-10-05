@@ -16,3 +16,5 @@ vite.config.ts
 media/readme/**
 media/logo.svg
 README.zh-CN.md
+scripts/**
+site/**

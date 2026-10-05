@@ -16,7 +16,7 @@
   </a>
 </h1>
 
-<p align="center">English | <a href="./README.zh-CN.md">中文</a> | <a href="#-quick-start">Quick Start</a> | <a href="#-file-format">File Format</a> | <a href="#-development">Development</a> | <a href="https://github.com/Azure12355/weilanx-base-table/issues">Feedback</a><br></p>
+<p align="center">English | <a href="./README.zh-CN.md">中文</a> | <a href="#-install-with-an-ai-agent">For Agents</a> | <a href="#-quick-start">Quick Start</a> | <a href="#-file-format">File Format</a> | <a href="#-development">Development</a> | <a href="https://github.com/Azure12355/weilanx-base-table/issues">Feedback</a><br></p>
 
 <div align="center">
 
@@ -90,10 +90,28 @@ Under the hood a `.base` file is **plain JSON**: one structured document holding
 - 🤖 Single-file JSON with a stable `id` per record — trivial for AI agents to read and write
 - 🔄 External edits to the file are picked up live by the open table
 
+# 🤖 Install with an AI Agent
+
+Most people let their coding agent do it. Paste this into **Claude Code**, **Codex**, **Cursor** or any agent with a terminal:
+
+```text
+Install the Weilanx Base Table VS Code extension for me.
+Follow https://github.com/Azure12355/weilanx-base-table/blob/main/docs/install-for-agents.md
+and verify that "code --list-extensions" contains weilanx.weilanx-base-table.
+```
+
+Or run the installer yourself (macOS / Linux). It finds VS Code, Cursor, Windsurf and Insiders, installs into each, and verifies the result:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash
+```
+
+> Only one editor? Add `BT_EDITOR=cursor` before `bash`. Agent-oriented steps, verification and troubleshooting live in [`docs/install-for-agents.md`](./docs/install-for-agents.md).
+
 # 🚀 Quick Start
 
-1. Download the latest `.vsix` from [Releases](https://github.com/Azure12355/weilanx-base-table/releases), or build it yourself (see [Development](#-development)).
-2. In VS Code: Extensions panel → `···` → **Install from VSIX...**
+1. Download [`weilanx-base-table.vsix`](https://github.com/Azure12355/weilanx-base-table/releases/latest/download/weilanx-base-table.vsix) from the latest release, or build it yourself (see [Development](#-development)).
+2. In VS Code: Extensions panel → `···` → **Install from VSIX...**, or run `code --install-extension weilanx-base-table.vsix --force`
 3. Open any `.base` file — try [`examples/选题库.base`](./examples/选题库.base) — or run **Base Table: Create Base Table (.base)** from the Command Palette.
 
 # 📄 File Format
@@ -147,7 +165,7 @@ npm run build        # webview (vite) + extension (esbuild)
 npm test             # data layer unit tests
 npm run typecheck
 
-npx @vscode/vsce package   # produce a .vsix
+npm run package            # build + produce weilanx-base-table.vsix
 ```
 
 Press **F5** in VS Code to launch an Extension Development Host, then open `examples/选题库.base`.

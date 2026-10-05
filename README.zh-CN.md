@@ -16,7 +16,7 @@
   </a>
 </h1>
 
-<p align="center"><a href="./README.md">English</a> | 中文 | <a href="#-快速开始">快速开始</a> | <a href="#-文件格式">文件格式</a> | <a href="#-开发">开发</a> | <a href="https://github.com/Azure12355/weilanx-base-table/issues">反馈</a><br></p>
+<p align="center"><a href="./README.md">English</a> | 中文 | <a href="#-让-ai-agent-帮你安装">Agent 安装</a> | <a href="#-快速开始">快速开始</a> | <a href="#-文件格式">文件格式</a> | <a href="#-开发">开发</a> | <a href="https://github.com/Azure12355/weilanx-base-table/issues">反馈</a><br></p>
 
 <div align="center">
 
@@ -90,10 +90,28 @@ Weilanx 多维表格(Weilanx Base Table)是一个 VS Code 插件,把一个 `.bas
 - 🤖 单文件 JSON,每条记录有稳定 `id`,AI Agent 读写零门槛
 - 🔄 文件被外部修改时,打开的表格实时刷新
 
+# 🤖 让 AI Agent 帮你安装
+
+现在大多数人都让 Agent 代劳。把下面这段话粘贴给 **Claude Code**、**Codex**、**Cursor** 或任何能用终端的 Agent:
+
+```text
+帮我安装 Weilanx Base Table 这个 VS Code 插件。
+按照 https://github.com/Azure12355/weilanx-base-table/blob/main/docs/install-for-agents.md 操作,
+装完确认 "code --list-extensions" 里有 weilanx.weilanx-base-table。
+```
+
+也可以自己运行安装脚本(macOS / Linux)。它会自动找到 VS Code、Cursor、Windsurf、Insiders,逐个安装并校验:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash
+```
+
+> 只想装到某一个编辑器?在 `bash` 前加上 `BT_EDITOR=cursor`。写给 Agent 的完整步骤、校验和排错见 [`docs/install-for-agents.md`](./docs/install-for-agents.md)。
+
 # 🚀 快速开始
 
-1. 从 [Releases](https://github.com/Azure12355/weilanx-base-table/releases) 下载最新的 `.vsix`,或者自己打包(见 [开发](#-开发))。
-2. VS Code:扩展面板 → `···` → **从 VSIX 安装...**
+1. 从最新 Release 下载 [`weilanx-base-table.vsix`](https://github.com/Azure12355/weilanx-base-table/releases/latest/download/weilanx-base-table.vsix),或者自己打包(见 [开发](#-开发))。
+2. VS Code:扩展面板 → `···` → **从 VSIX 安装...**,或运行 `code --install-extension weilanx-base-table.vsix --force`
 3. 打开任意 `.base` 文件(可以先试试 [`examples/选题库.base`](./examples/选题库.base)),或在命令面板运行 **多维表格: 创建多维表格 (.base)**。
 
 # 📄 文件格式
@@ -147,7 +165,7 @@ npm run build        # 打包 webview(vite) + 扩展(esbuild)
 npm test             # 数据层单测
 npm run typecheck
 
-npx @vscode/vsce package   # 生成 .vsix
+npm run package            # 构建并生成 weilanx-base-table.vsix
 ```
 
 在 VS Code 里按 **F5** 启动「扩展开发宿主」,然后打开 `examples/选题库.base`。

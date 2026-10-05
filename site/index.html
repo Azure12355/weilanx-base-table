@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weilanx Base Table · Multidimensional tables for VS Code</title>
+  <meta name="description" content="Views, filters, grouping and inline editing for .base files in VS Code. Plain JSON underneath, readable by humans and AI agents." />
+  <meta name="theme-color" content="#0c0d10" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)" />
+  <meta property="og:title" content="Weilanx Base Table" />
+  <meta property="og:description" content="Multidimensional tables for VS Code, stored as plain JSON." />
+  <meta property="og:image" content="assets/grid.png" />
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link rel="preload" as="image" href="assets/grid.png" />
+  <!-- Geist / Geist Mono (fontsource),中文回退到系统字体 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/latin.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/latin-600.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/latin.css" />
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1" defer></script>
+  <link rel="stylesheet" href="styles.css?v=5" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top" aria-label="Weilanx Base Table">
+        <img src="assets/logo.png" width="28" height="28" alt="" />
+        <span>Weilanx Base Table</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#agent" data-i18n="nav.agent">For agents</a>
+        <a href="#features" data-i18n="nav.features">Features</a>
+        <a href="#format" data-i18n="nav.format">File format</a>
+              </nav>
+      <div class="nav-actions">
+        <button class="lang" type="button" id="lang-toggle" aria-label="Switch language">中文</button>
+        <a class="icon-btn" href="https://github.com/Azure12355/weilanx-base-table" aria-label="GitHub">
+          <i class="ph ph-github-logo"></i>
+        </a>
+        <a class="btn btn-primary btn-sm" href="#agent" data-i18n="cta.install">Install</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero: 左文案 / 右真实截图,截图向右出血 -->
+    <section class="hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <p class="eyebrow" data-i18n="hero.eyebrow">VS Code extension</p>
+        <h1 data-i18n-html="hero.title">Your tables, in a <em>plain JSON</em> file.</h1>
+        <p class="hero-sub" data-i18n="hero.sub">Views, filters, grouping and inline editing for .base files in VS Code. Readable by people and AI agents alike.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#agent"><i class="ph ph-download-simple"></i><span data-i18n="cta.install">Install</span></a>
+          <a class="btn btn-ghost" href="https://github.com/Azure12355/weilanx-base-table"><i class="ph ph-github-logo"></i><span>GitHub</span></a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <figure class="frame frame-hero">
+          <img src="assets/grid.png" width="1440" height="820" alt="Weilanx Base Table grid view with tags, dates, numbers and checkboxes" />
+        </figure>
+        <figure class="frame frame-float">
+          <img src="assets/fields.png" width="330" height="428" alt="Field configuration panel listing eight field types" />
+        </figure>
+      </div>
+    </section>
+
+
+    <!-- For Agents:多数人让 Agent 代装,给一段可直接粘贴的提示词 + 一条命令 -->
+    <section class="agent" id="agent">
+      <div class="agent-inner">
+        <div class="agent-copy reveal">
+          <p class="eyebrow eyebrow-plain"><i class="ph ph-sparkle"></i><span data-i18n="agent.eyebrow">For agents</span></p>
+          <h2 class="section-title" data-i18n="agent.title">Let your agent install it.</h2>
+          <p class="section-sub" data-i18n="agent.sub">Paste one prompt into Claude Code, Codex or Cursor. It downloads the latest release, installs it and checks the result.</p>
+          <ul class="agent-points">
+            <li><i class="ph ph-magnifying-glass"></i><span data-i18n="agent.p1">Finds VS Code, Cursor, Windsurf or Insiders on its own</span></li>
+            <li><i class="ph ph-seal-check"></i><span data-i18n="agent.p2">Verifies the install before reporting back</span></li>
+            <li><i class="ph ph-book-open-text"></i><span data-i18n-html="agent.p3">Full steps in <a href="https://github.com/Azure12355/weilanx-base-table/blob/main/docs/install-for-agents.md">install-for-agents.md</a></span></li>
+          </ul>
+          <a class="text-link" href="#install"><span data-i18n="agent.manual">Prefer to install by hand?</span><i class="ph ph-arrow-down"></i></a>
+        </div>
+        <div class="agent-card reveal">
+          <div class="agent-tabs" role="tablist" aria-label="Install method">
+            <button role="tab" class="agent-tab is-active" aria-selected="true" aria-controls="agent-prompt" id="tab-prompt"><i class="ph ph-chat-centered-text"></i><span data-i18n="agent.tab.prompt">Prompt</span></button>
+            <button role="tab" class="agent-tab" aria-selected="false" aria-controls="agent-shell" id="tab-shell"><i class="ph ph-terminal-window"></i><span data-i18n="agent.tab.shell">Shell</span></button>
+            <button class="copy-btn agent-copy-btn" type="button" data-copy-active="agent"><i class="ph ph-copy"></i><span data-i18n="copy">Copy</span></button>
+          </div>
+          <pre class="agent-pane is-active" id="agent-prompt" role="tabpanel" aria-labelledby="tab-prompt"><code data-i18n="agent.prompt"></code></pre>
+          <pre class="agent-pane" id="agent-shell" role="tabpanel" aria-labelledby="tab-shell" hidden><code><span class="c" data-i18n="agent.shell.c1"># macOS / Linux: installs into every VS Code based editor it finds</span>
+curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash
+
+<span class="c" data-i18n="agent.shell.c2"># Only one editor</span>
+curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | BT_EDITOR=cursor bash</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 功能 Bento:5 项内容 = 5 个格子 -->
+    <section class="features" id="features">
+      <h2 class="section-title reveal" data-i18n="features.title">Everything a table needs. Nothing it doesn't.</h2>
+      <div class="bento">
+        <article class="cell cell-group reveal">
+          <div class="cell-text">
+            <h3 data-i18n="f.group.t">Views that remember</h3>
+            <p data-i18n="f.group.d">Every view keeps its own filters, sorting, grouping, hidden columns and widths. Switch with one click.</p>
+          </div>
+          <img class="cell-shot" src="assets/group.png" loading="lazy" width="1440" height="820" alt="Records grouped by category" />
+        </article>
+
+        <article class="cell cell-filter reveal">
+          <div class="cell-text">
+            <h3 data-i18n="f.filter.t">Filters that read like sentences</h3>
+            <p data-i18n="f.filter.d">Combine conditions with AND or OR, across 16 operators.</p>
+          </div>
+          <img class="cell-shot" src="assets/filter.png" loading="lazy" width="412" height="232" alt="Filter panel: status is published and views above 30000" />
+        </article>
+
+        <article class="cell cell-types reveal">
+          <h3 data-i18n="f.types.t">Eight field types</h3>
+          <ul class="type-list">
+            <li><i class="ph ph-text-t"></i><span data-i18n="type.text">Text</span></li>
+            <li><i class="ph ph-paragraph"></i><span data-i18n="type.longtext">Long text</span></li>
+            <li><i class="ph ph-radio-button"></i><span data-i18n="type.select">Single select</span></li>
+            <li><i class="ph ph-list-checks"></i><span data-i18n="type.multi">Multi select</span></li>
+            <li><i class="ph ph-calendar-blank"></i><span data-i18n="type.date">Date</span></li>
+            <li><i class="ph ph-hash"></i><span data-i18n="type.number">Number</span></li>
+            <li><i class="ph ph-check-square"></i><span data-i18n="type.checkbox">Checkbox</span></li>
+            <li><i class="ph ph-link-simple"></i><span data-i18n="type.link">Link</span></li>
+          </ul>
+        </article>
+
+        <article class="cell cell-keys reveal">
+          <h3 data-i18n="f.keys.t">Real VS Code shortcuts</h3>
+          <p data-i18n="f.keys.d">Rebind any of them in Keyboard Shortcuts.</p>
+          <dl class="keys">
+            <div><dt data-i18n="k.undo">Undo</dt><dd><kbd>⌘</kbd><kbd>Z</kbd></dd></div>
+            <div><dt data-i18n="k.redo">Redo</dt><dd><kbd>⌘</kbd><kbd>⇧</kbd><kbd>Z</kbd></dd></div>
+            <div><dt data-i18n="k.copy">Copy records</dt><dd><kbd>⌘</kbd><kbd>C</kbd></dd></div>
+            <div><dt data-i18n="k.add">New record</dt><dd><kbd>⌘</kbd><kbd>⌥</kbd><kbd>N</kbd></dd></div>
+          </dl>
+        </article>
+
+        <article class="cell cell-select reveal">
+          <div class="cell-text">
+            <h3 data-i18n="f.select.t">Select, copy, paste anywhere</h3>
+            <p data-i18n="f.select.d">Hover a row number to multi-select. Copied records paste cleanly into Excel, Google Sheets, Feishu and WPS.</p>
+          </div>
+          <img class="cell-shot" src="assets/select.png" loading="lazy" width="1440" height="820" alt="Four selected rows with a floating action bar" />
+        </article>
+      </div>
+    </section>
+
+    <!-- 一个文件,两种读者:可切换的真实组件 -->
+    <section class="format" id="format">
+      <div class="format-head reveal">
+        <h2 class="section-title" data-i18n="format.title">One file. Two kinds of readers.</h2>
+        <p class="section-sub" data-i18n="format.sub">People get a spreadsheet. Agents get JSON they can parse in one call and edit with a few lines of code.</p>
+      </div>
+      <div class="switch reveal" role="tablist" aria-label="View mode">
+        <button role="tab" aria-selected="true" aria-controls="pane-human" id="tab-human" class="switch-btn is-active"><i class="ph ph-table"></i><span data-i18n="format.human">For people</span></button>
+        <button role="tab" aria-selected="false" aria-controls="pane-agent" id="tab-agent" class="switch-btn"><i class="ph ph-brackets-curly"></i><span data-i18n="format.agent">For agents</span></button>
+      </div>
+      <div class="panes reveal">
+        <figure class="frame pane is-active" id="pane-human" role="tabpanel" aria-labelledby="tab-human">
+          <img src="assets/grid.png" loading="lazy" width="1440" height="820" alt="The same file rendered as a table" />
+        </figure>
+        <div class="frame pane pane-code" id="pane-agent" role="tabpanel" aria-labelledby="tab-agent" hidden>
+          <div class="code-bar"><span>选题库.base</span><button class="copy-btn" type="button" data-copy="code-json"><i class="ph ph-copy"></i><span data-i18n="copy">Copy</span></button></div>
+<pre id="code-json"><code>{
+  <span class="k">"fields"</span>: {
+    <span class="k">"标题"</span>: { <span class="k">"type"</span>: <span class="s">"text"</span>, <span class="k">"primary"</span>: <span class="b">true</span> },
+    <span class="k">"状态"</span>: { <span class="k">"type"</span>: <span class="s">"select"</span>, <span class="k">"options"</span>: [<span class="s">"待做"</span>, <span class="s">"进行中"</span>, <span class="s">"已发布"</span>] },
+    <span class="k">"平台"</span>: { <span class="k">"type"</span>: <span class="s">"multi"</span>, <span class="k">"options"</span>: [<span class="s">"B站"</span>, <span class="s">"小红书"</span>, <span class="s">"YouTube"</span>] },
+    <span class="k">"播放量"</span>: { <span class="k">"type"</span>: <span class="s">"number"</span>, <span class="k">"thousands"</span>: <span class="b">true</span> }
+  },
+  <span class="k">"views"</span>: [
+    { <span class="k">"name"</span>: <span class="s">"按分类"</span>, <span class="k">"group"</span>: { <span class="k">"field"</span>: <span class="s">"分类"</span> } },
+    { <span class="k">"name"</span>: <span class="s">"已发布"</span>, <span class="k">"filters"</span>: [{ <span class="k">"field"</span>: <span class="s">"状态"</span>, <span class="k">"op"</span>: <span class="s">"is"</span>, <span class="k">"value"</span>: <span class="s">"已发布"</span> }] }
+  ],
+  <span class="k">"records"</span>: [
+    { <span class="k">"id"</span>: <span class="s">"r_demo_01"</span>, <span class="k">"标题"</span>: <span class="s">"零基础学 Python"</span>, <span class="k">"状态"</span>: <span class="s">"已发布"</span>, <span class="k">"播放量"</span>: <span class="n">26856</span> }
+  ]
+}</code></pre>
+        </div>
+      </div>
+      <ul class="format-facts reveal">
+        <li><i class="ph ph-file-text"></i><span data-i18n="fact.single">One file per table, diff-friendly in git</span></li>
+        <li><i class="ph ph-fingerprint"></i><span data-i18n="fact.id">Stable record ids, safe for scripted edits</span></li>
+        <li><i class="ph ph-arrows-clockwise"></i><span data-i18n="fact.live">External edits show up live in the open table</span></li>
+      </ul>
+    </section>
+
+    <!-- 安装:左侧标题粘住,右侧动作列表 -->
+    <section class="install" id="install">
+      <div class="install-head">
+        <h2 class="section-title reveal" data-i18n="install.title">Up and running in a minute.</h2>
+        <p class="section-sub reveal" data-i18n="install.sub">Works with VS Code 1.90 or later, plus Cursor and other VS Code based editors.</p>
+      </div>
+      <ol class="install-steps">
+        <li class="reveal">
+          <i class="ph ph-download-simple step-icon"></i>
+          <div>
+            <h3 data-i18n="s1.t">Download the .vsix</h3>
+            <p data-i18n-html="s1.d">Grab the latest build from <a href="https://github.com/Azure12355/weilanx-base-table/releases">GitHub Releases</a>, or package it yourself:</p>
+            <div class="cmd"><code id="cmd-build">npm install &amp;&amp; npm run package</code><button class="copy-btn" type="button" data-copy="cmd-build" aria-label="Copy"><i class="ph ph-copy"></i></button></div>
+          </div>
+        </li>
+        <li class="reveal">
+          <i class="ph ph-puzzle-piece step-icon"></i>
+          <div>
+            <h3 data-i18n="s2.t">Install from VSIX</h3>
+            <p data-i18n="s2.d">Open the Extensions panel, click the ··· menu and choose Install from VSIX. Or use the CLI:</p>
+            <div class="cmd"><code id="cmd-install">code --install-extension weilanx-base-table.vsix --force</code><button class="copy-btn" type="button" data-copy="cmd-install" aria-label="Copy"><i class="ph ph-copy"></i></button></div>
+          </div>
+        </li>
+        <li class="reveal">
+          <i class="ph ph-table step-icon"></i>
+          <div>
+            <h3 data-i18n="s3.t">Open or create a .base file</h3>
+            <p data-i18n="s3.d">Double-click any .base file, or run "Create Base Table" from the Command Palette. The sidebar lists every table in your workspace.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 收尾 CTA -->
+    <section class="closing reveal">
+      <div class="closing-glow" aria-hidden="true"></div>
+      <img src="assets/logo.png" width="72" height="72" alt="" />
+      <h2 data-i18n="closing.title">Open source, MIT licensed.</h2>
+      <p data-i18n="closing.sub">Issues and pull requests are welcome.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#agent"><i class="ph ph-download-simple"></i><span data-i18n="cta.install">Install</span></a>
+        <a class="btn btn-ghost" href="https://github.com/Azure12355/weilanx-base-table"><i class="ph ph-github-logo"></i><span>GitHub</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <a class="brand" href="#top"><img src="assets/logo.png" width="22" height="22" alt="" /><span>Weilanx Base Table</span></a>
+      <nav aria-label="Footer">
+        <a href="https://github.com/Azure12355/weilanx-base-table" data-i18n="foot.source">Source</a>
+        <a href="https://github.com/Azure12355/weilanx-base-table/issues" data-i18n="foot.issues">Issues</a>
+        <a href="https://github.com/Azure12355/weilanx-base-table/blob/main/LICENSE">MIT License</a>
+      </nav>
+      <p>© 2026 Azure12355</p>
+    </div>
+  </footer>
+
+  <script src="main.js?v=5"></script>
+</body>
+</html>
