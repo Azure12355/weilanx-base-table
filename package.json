@@ -10,6 +10,7 @@
     "type": "git",
     "url": "https://github.com/Azure12355/weilanx-base-table.git"
   },
+  "homepage": "https://azure12355.github.io/weilanx-base-table/",
   "engines": {
     "vscode": "^1.90.0"
   },
