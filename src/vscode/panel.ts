@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import { readBase } from "./base/reader";
 import {
+  readBase,
   updateCell,
   addRow,
   deleteRow,
@@ -16,8 +16,8 @@ import {
   moveRowTo,
   replaceAll,
   deleteField,
-} from "./base/writer";
-import { FieldDef, ViewDef } from "./base/types";
+} from "./fsStore";
+import { FieldDef, ViewDef } from "../core/types";
 
 /** Webview → 扩展 的消息 */
 type InMsg =
@@ -35,7 +35,8 @@ type InMsg =
   | { type: "moveRowTo"; id: string; targetId: string; before: boolean }
   | { type: "deleteField"; name: string }
   | { type: "replaceAll"; doc: { fields: Record<string, FieldDef>; views: ViewDef[]; records: Record<string, unknown>[] } }
-  | { type: "export"; defaultName: string; content: string };
+  | { type: "export"; defaultName: string; content: string }
+  | { type: "openLink"; target: string };
 
 /** 一个 .base 文件就是一个 JSON 文本文档,用自定义编辑器把它渲染成多维表格 */
 export class BaseEditorProvider implements vscode.CustomTextEditorProvider {
@@ -177,6 +178,9 @@ export class BaseTableController {
         case "export":
           this.handleExport(m.defaultName, m.content);
           break;
+        case "openLink":
+          this.openWikiLink(m.target);
+          break;
       }
     } catch (err) {
       vscode.window.showErrorMessage(`多维表格操作失败: ${(err as Error).message}`);
@@ -194,6 +198,19 @@ export class BaseTableController {
     this.lastWrite = Date.now();
     fn();
     this.lastWrite = Date.now();
+  }
+
+  /** [[笔记]]:在工作区里找同名 .md(忽略 #标题),找到就打开 */
+  private async openWikiLink(target: string) {
+    const name = target.split("#")[0].trim();
+    if (!name) return;
+    const glob = `**/${name.replace(/[\[\]{}*?]/g, "?")}.md`;
+    const hits = await vscode.workspace.findFiles(glob, "**/node_modules/**", 5);
+    if (hits.length === 0) {
+      vscode.window.showInformationMessage(`工作区里没有找到笔记「${name}.md」`);
+      return;
+    }
+    await vscode.window.showTextDocument(hits[0], { preview: false });
   }
 
   private async handleExport(defaultName: string, content: string) {

@@ -1,4 +1,4 @@
-import type { FieldType } from "../../src/base/types";
+import type { FieldType } from "../../src/core/types";
 
 export interface OpDef {
   op: string;
@@ -6,15 +6,18 @@ export interface OpDef {
   needsValue: boolean;
 }
 
-export const OPS_BY_TYPE: Record<FieldType, OpDef[]> = {
-  text: [
-    { op: "contains", label: "包含", needsValue: true },
-    { op: "notContains", label: "不包含", needsValue: true },
-    { op: "is", label: "等于", needsValue: true },
-    { op: "isNot", label: "不等于", needsValue: true },
-    { op: "empty", label: "为空", needsValue: false },
+const TEXT_OPS: OpDef[] = [
+  { op: "contains", label: "包含", needsValue: true },
+  { op: "notContains", label: "不包含", needsValue: true },
+  { op: "is", label: "等于", needsValue: true },
+  { op: "isNot", label: "不等于", needsValue: true },
+  { op: "empty", label: "为空", needsValue: false },
     { op: "notEmpty", label: "不为空", needsValue: false },
-  ],
+];
+
+export const OPS_BY_TYPE: Record<FieldType, OpDef[]> = {
+  text: TEXT_OPS,
+  longtext: TEXT_OPS,
   select: [
     { op: "is", label: "是", needsValue: true },
     { op: "isNot", label: "不是", needsValue: true },

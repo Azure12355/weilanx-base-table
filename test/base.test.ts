@@ -3,8 +3,9 @@ import assert from "node:assert/strict";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { readBase, readDoc } from "../src/base/reader";
 import {
+  readBase,
+  readDoc,
   updateCell,
   addRow,
   deleteRow,
@@ -17,8 +18,8 @@ import {
   moveRow,
   moveRowTo,
   deleteField,
-} from "../src/base/writer";
-import { BaseDoc, FieldDef } from "../src/base/types";
+} from "../src/vscode/fsStore";
+import { BaseDoc, FieldDef } from "../src/core/types";
 
 const FIELDS: Record<string, FieldDef> = {
   标题: { type: "text", primary: true },

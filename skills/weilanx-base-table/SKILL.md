@@ -5,7 +5,7 @@ description: Read, query and edit Weilanx Base Table files, the local multidimen
 
 # Weilanx Base Table
 
-A Weilanx Base Table is one JSON file (`.base`, or `.wbase` in newer versions) holding a whole table:
+A Weilanx Base Table is one JSON file (`.wbase`; older tables use `.base`, same content) holding a whole table:
 
 ```json
 {
@@ -15,7 +15,7 @@ A Weilanx Base Table is one JSON file (`.base`, or `.wbase` in newer versions) h
 }
 ```
 
-The user usually has the file open in VS Code or Obsidian, and the plugin re-renders the table as soon as the file changes. So every edit you make is visible to them immediately, and a malformed edit breaks their table in front of them. That is why edits go through the bundled script instead of hand-written JSON.
+The user usually has the file open in VS Code or Obsidian, and the plugin re-renders the table as soon as the file changes (Obsidian picks it up within a second or two). So every edit you make is visible to them immediately, and a malformed edit breaks their table in front of them. That is why edits go through the bundled script instead of hand-written JSON.
 
 ## The script
 
@@ -60,6 +60,8 @@ It keeps the invariants the plugin relies on: every record gets a unique stable 
 - **Destructive or bulk changes** (`delete`, `field-delete`, `update --where` touching many rows): run the same `--where` through `query --count` first, and if the number is surprising or the user's wording is ambiguous, show the matching titles and confirm before writing.
 - **Unknown field in the user's request**: the script refuses to write unknown fields. Check `info` for the closest existing name (users often say 「日期」 for 「发布日期」). Only add a new field when the user clearly wants one, choosing the type from the data: options-like values → `select`/`multi`, yes/no → `checkbox`, amounts → `number`, `YYYY-MM-DD` → `date`, URLs → `link`, paragraphs → `longtext`.
 - **Select values**: reuse an existing option when the user's word is a near match (「已完成」 vs 「完成」); only let the script add a new option when it is genuinely new.
+- **New tables use `.wbase`.** Plugin 0.18+ opens both extensions in VS Code; Obsidian only opens `.wbase` (its core Bases plugin owns `.base`). If the user's VS Code plugin is older than 0.18 and only opens `.base`, create `.base` instead. Never rename an existing file's extension unless asked.
+- **Links to notes**: in Obsidian vaults, a text / link cell whose whole value is `[[Note name]]` (or `[[Note|label]]`) renders as a clickable note link. Use that form when the user wants a record to point at a note.
 - **Never change `id`s** and never reuse one; ids are how the plugin tracks rows, the primary field value is just the title.
 - **The primary field** (`primary: true`) cannot be deleted; there is exactly one per table, the first column.
 - **Answering questions** ("哪几条播放量最高", "还有多少待做") is a `query` job; do not modify the file for read-only requests.

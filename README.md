@@ -23,6 +23,7 @@
 [![][vscode-shield]][vscode-link]
 [![][typescript-shield]][typescript-link]
 [![][react-shield]][react-link]
+[![][obsidian-shield]][obsidian-link]
 [![][i18n-shield]][i18n-link]
 
 </div>
@@ -38,9 +39,9 @@
 
 # 📊 Weilanx Base Table
 
-Weilanx Base Table is a VS Code extension that turns a single `.base` file into a **multidimensional table** (think Airtable / Feishu Base) — multiple views, filters, sorting, grouping and inline editing, right inside your editor.
+Weilanx Base Table turns a single `.wbase` file into a **multidimensional table** (think Airtable / Feishu Base) with multiple views, filters, sorting, grouping and inline editing. It runs in **VS Code** (and Cursor, Windsurf) and in **Obsidian** on desktop and mobile, and both open the same file.
 
-Under the hood a `.base` file is **plain JSON**: one structured document holding fields, views and records. Humans get a spreadsheet-like UI; AI agents get a file they can read in one `JSON.parse` and edit with a few lines of code.
+Under the hood a `.wbase` file is **plain JSON**: one structured document holding fields, views and records. Humans get a spreadsheet-like UI; AI agents get a file they can read in one `JSON.parse` and edit with a few lines of code.
 
 ❤️ Like it? Give it a star 🌟 — it helps a lot!
 
@@ -79,13 +80,20 @@ Under the hood a `.base` file is **plain JSON**: one structured document holding
 
 4. **VS Code Integration**:
 
-- 📂 A dedicated sidebar lists every `.base` file in your workspace
+- 📂 A dedicated sidebar lists every `.wbase` file in your workspace
 - ⌨️ All shortcuts are real VS Code keybindings — rebind them in Keyboard Shortcuts
 - 🌐 English and Simplified Chinese UI, following your VS Code display language
 - 📤 Export to CSV, Excel (`.xls`) or full JSON
 - 🎨 Custom file icon (with Material Icon Theme support)
 
-5. **Agent Friendly**:
+5. **Obsidian**:
+
+- 📱 Same table UI on desktop and mobile, following your Obsidian theme (light, dark and community themes)
+- 🔗 `[[Note]]` links in cells open the note; renaming a note updates the links in every table
+- ⌨️ `Cmd/Ctrl+Z` / `Cmd/Ctrl+Shift+Z` work inside the table without taking over global hotkeys
+- 🛟 A broken file (sync conflict, bad hand edit) shows an error instead of being overwritten
+
+6. **Agent Friendly**:
 
 - 🤖 Single-file JSON with a stable `id` per record — trivial for AI agents to read and write
 - 🔄 External edits to the file are picked up live by the open table
@@ -95,9 +103,9 @@ Under the hood a `.base` file is **plain JSON**: one structured document holding
 Most people let their coding agent do it. Paste this into **Claude Code**, **Codex**, **Cursor** or any agent with a terminal:
 
 ```text
-Install the Weilanx Base Table VS Code extension for me.
+Install the Weilanx Base Table plugin for me (VS Code / Obsidian).
 Follow https://github.com/Azure12355/weilanx-base-table/blob/main/docs/install-for-agents.md
-and verify that "code --list-extensions" contains weilanx.weilanx-base-table.
+and verify the install before reporting back.
 ```
 
 Or run the installer yourself (macOS / Linux). It finds VS Code, Cursor, Windsurf and Insiders, installs into each, and verifies the result:
@@ -106,17 +114,33 @@ Or run the installer yourself (macOS / Linux). It finds VS Code, Cursor, Windsur
 curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash
 ```
 
+For Obsidian, pass your vault path:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash -s -- --obsidian "/path/to/vault"
+```
+
 > Only one editor? Add `BT_EDITOR=cursor` before `bash`. Agent-oriented steps, verification and troubleshooting live in [`docs/install-for-agents.md`](./docs/install-for-agents.md).
 
 # 🚀 Quick Start
 
+**VS Code**
+
 1. Download [`weilanx-base-table.vsix`](https://github.com/Azure12355/weilanx-base-table/releases/latest/download/weilanx-base-table.vsix) from the latest release, or build it yourself (see [Development](#-development)).
 2. In VS Code: Extensions panel → `···` → **Install from VSIX...**, or run `code --install-extension weilanx-base-table.vsix --force`
-3. Open any `.base` file — try [`examples/选题库.base`](./examples/选题库.base) — or run **Base Table: Create Base Table (.base)** from the Command Palette.
+3. Open any `.wbase` file (try [`examples/选题库.wbase`](./examples/选题库.wbase)) or run **Base Table: Create Base Table (.wbase)** from the Command Palette.
+
+**Obsidian**
+
+1. Download `main.js`, `manifest.json` and `styles.css` from the [latest release](https://github.com/Azure12355/weilanx-base-table/releases/latest) into `<vault>/.obsidian/plugins/weilanx-base-table/`, or install with [BRAT](https://github.com/TfTHacker/obsidian42-brat) using `Azure12355/weilanx-base-table`.
+2. Enable **Weilanx Base Table** under Settings → Community plugins.
+3. Open any `.wbase` file, or run **Create new base table** from the command palette.
+
+> **Why `.wbase`?** Obsidian's core Bases plugin owns the `.base` extension. Older `.base` tables still open in VS Code; right-click one and choose **Convert to .wbase** to use it in Obsidian too.
 
 # 📄 File Format
 
-A `.base` file is a JSON document like this:
+A `.wbase` file is a JSON document like this:
 
 ```json
 {
@@ -166,9 +190,13 @@ npm test             # data layer unit tests
 npm run typecheck
 
 npm run package            # build + produce weilanx-base-table.vsix
+npm run build:obsidian     # Obsidian plugin -> dist/obsidian/{main.js,manifest.json,styles.css}
+npm run dev:obsidian -- --out "/path/to/vault/.obsidian/plugins/weilanx-base-table"   # rebuild on change
 ```
 
-Press **F5** in VS Code to launch an Extension Development Host, then open `examples/选题库.base`.
+Press **F5** in VS Code to launch an Extension Development Host, then open `examples/选题库.wbase`.
+
+Code layout: `src/core` (format and edit operations, shared), `webview/src` (table UI, shared), `src/vscode` and `src/obsidian` (host shells).
 
 # 📝 Roadmap
 
@@ -176,6 +204,8 @@ Press **F5** in VS Code to launch an Extension Development Host, then open `exam
 - 🔗 Linked records across tables
 - 🧮 Formula fields
 - 🌐 Localize the in-table UI (toolbar, panels) in English
+- 📝 Embed a table in a note with `![[table.wbase]]` (Obsidian)
+- 🏪 Publish to the Obsidian community plugin directory
 
 # 🤝 Contributing
 
@@ -192,6 +222,8 @@ Issues and pull requests are welcome! Please run `npm test` and `npm run typeche
 [typescript-link]: https://www.typescriptlang.org/
 [react-shield]: https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black
 [react-link]: https://react.dev/
+[obsidian-shield]: https://img.shields.io/badge/Obsidian-1.5%2B-7C3AED?logo=obsidian&logoColor=white
+[obsidian-link]: https://obsidian.md/
 [i18n-shield]: https://img.shields.io/badge/i18n-English%20%7C%20中文-0088CC
 [i18n-link]: ./README.zh-CN.md
 [release-shield]: https://img.shields.io/github/v/release/Azure12355/weilanx-base-table?logo=github

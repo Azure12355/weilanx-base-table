@@ -2,8 +2,8 @@
   "displayName": "Weilanx 多维表格",
   "description": "把 .base 文件当多维表格编辑——筛选、多视图、分组、导出,底层单文件 JSON 对 Agent 友好",
   "category": "多维表格",
-  "command.open": "打开多维表格 (.base)",
-  "command.create": "创建多维表格 (.base)",
+  "command.open": "打开多维表格 (.wbase)",
+  "command.create": "创建多维表格 (.wbase)",
   "command.refreshTree": "刷新",
   "command.undo": "撤销",
   "command.redo": "重做",
@@ -22,5 +22,6 @@
   "config.fontSize": "单元格字号(px)。0 = 跟随 VS Code 编辑器字号",
   "config.colorfulTags": "单选/多选用彩色胶囊标签(跟随主题图表色)",
   "config.wrapText": "单元格文字换行显示(关闭则单行截断)",
-  "config.keybindings": "表格内快捷键(撤销 / 重做 / 新增记录 / 导出)在 VS Code「键盘快捷方式」里修改:[打开快捷键设置](command:baseTable.openKeybindings)"
+  "config.keybindings": "表格内快捷键(撤销 / 重做 / 新增记录 / 导出)在 VS Code「键盘快捷方式」里修改:[打开快捷键设置](command:baseTable.openKeybindings)",
+  "command.convertToWbase": "转换为 .wbase"
 }

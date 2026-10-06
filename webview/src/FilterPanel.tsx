@@ -1,4 +1,5 @@
-import type { FieldDef, FilterCond } from "../../src/base/types";
+import { useKeepInViewport } from "./hooks";
+import type { FieldDef, FilterCond } from "../../src/core/types";
 import { opsFor, needsValue } from "./ops";
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export function FilterPanel({ fields, cols, filters, match, onChange, onMatchChange, onClear, onSaveAsView }: Props) {
+  const keepRef = useKeepInViewport<HTMLDivElement>();
   const update = (i: number, patch: Partial<FilterCond>) =>
     onChange(filters.map((f, idx) => (idx === i ? { ...f, ...patch } : f)));
   const add = () => {
@@ -22,7 +24,7 @@ export function FilterPanel({ fields, cols, filters, match, onChange, onMatchCha
   const remove = (i: number) => onChange(filters.filter((_, idx) => idx !== i));
 
   return (
-    <div className="popover filter-pop" onMouseDown={(e) => e.stopPropagation()}>
+    <div ref={keepRef} className="popover filter-pop" onMouseDown={(e) => e.stopPropagation()}>
       <div className="pop-head">设置筛选条件</div>
       {filters.length > 0 && (
         <div className="pop-match">

@@ -2,7 +2,7 @@
   "name": "weilanx-base-table",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "publisher": "weilanx",
   "icon": "media/logo.png",
   "license": "MIT",
@@ -62,6 +62,11 @@
         "title": "%command.openKeybindings%",
         "category": "%category%",
         "icon": "$(keyboard)"
+      },
+      {
+        "command": "baseTable.convertToWbase",
+        "title": "%command.convertToWbase%",
+        "category": "%category%"
       }
     ],
     "viewsContainers": {
@@ -88,6 +93,9 @@
         "displayName": "%customEditor.displayName%",
         "selector": [
           {
+            "filenamePattern": "*.wbase"
+          },
+          {
             "filenamePattern": "*.base"
           }
         ],
@@ -98,12 +106,17 @@
       "explorer/context": [
         {
           "command": "baseTable.open",
-          "when": "!explorerResourceIsFolder && resourceExtname == .base",
+          "when": "!explorerResourceIsFolder && resourceExtname =~ /^\\.w?base$/",
           "group": "navigation"
         },
         {
           "command": "baseTable.create",
           "when": "explorerResourceIsFolder",
+          "group": "navigation"
+        },
+        {
+          "command": "baseTable.convertToWbase",
+          "when": "!explorerResourceIsFolder && resourceExtname == .base",
           "group": "navigation"
         }
       ],
@@ -198,6 +211,7 @@
           "Base Table"
         ],
         "extensions": [
+          ".wbase",
           ".base"
         ],
         "icon": {
@@ -246,13 +260,16 @@
     ]
   },
   "scripts": {
-    "build:ext": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "build:ext": "esbuild src/vscode/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
     "build:web": "vite build",
     "build": "npm run build:web && npm run build:ext",
     "watch:ext": "npm run build:ext -- --watch",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p webview/tsconfig.json && tsc --noEmit -p tsconfig.obsidian.json",
     "test": "node --test --import tsx test/*.test.ts",
-    "package": "npm run build && npx --yes @vscode/vsce package --no-dependencies -o weilanx-base-table.vsix"
+    "package": "npm run build && npx --yes @vscode/vsce package --no-dependencies -o weilanx-base-table.vsix",
+    "build:obsidian": "node esbuild.obsidian.mjs",
+    "dev:obsidian": "node esbuild.obsidian.mjs --watch",
+    "release": "npm run package && npm run build:obsidian"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -261,6 +278,7 @@
     "@types/vscode": "^1.90.0",
     "@vitejs/plugin-react": "^4.3.4",
     "esbuild": "^0.24.0",
+    "obsidian": "^1.13.1",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "vite": "^6.0.0"

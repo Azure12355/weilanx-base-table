@@ -1,5 +1,6 @@
+import { useKeepInViewport } from "./hooks";
 import { useState } from "react";
-import type { FieldDef } from "../../src/base/types";
+import type { FieldDef } from "../../src/core/types";
 import { Icon } from "./icons";
 
 interface Props {
@@ -24,11 +25,12 @@ const TYPE_LABEL: Record<string, string> = {
 };
 
 export function FieldsPanel({ fields, allCols, hiddenCols, onEdit, onToggleHidden, onReorder, onAdd }: Props) {
+  const keepRef = useKeepInViewport<HTMLDivElement>();
   const hidden = new Set(hiddenCols);
   const [dragFrom, setDragFrom] = useState<string | null>(null);
 
   return (
-    <div className="popover fields-pop" onMouseDown={(e) => e.stopPropagation()}>
+    <div ref={keepRef} className="popover fields-pop" onMouseDown={(e) => e.stopPropagation()}>
       <div className="pop-head">字段配置</div>
       <div className="fields-list">
         {allCols.map((c) => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 /** 当 open 时,点击 ref 元素之外(mousedown)或按 Esc 则调用 onClose */
 export function useAutoClose<T extends HTMLElement>(open: boolean, onClose: () => void) {
@@ -22,5 +22,19 @@ export function useAutoClose<T extends HTMLElement>(open: boolean, onClose: () =
       document.removeEventListener("keydown", onKey);
     };
   }, [open, onClose]);
+  return ref;
+}
+
+/** 弹层渲染后如果超出视口右边(手机窄屏),整体左移到可见区域内 */
+export function useKeepInViewport<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.transform = "";
+    const r = el.getBoundingClientRect();
+    const overflow = r.right - (window.innerWidth - 8);
+    if (overflow > 0) el.style.transform = `translateX(${-Math.min(overflow, r.left - 8)}px)`;
+  });
   return ref;
 }

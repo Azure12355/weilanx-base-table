@@ -1,4 +1,5 @@
-import type { SortSpec } from "../../src/base/types";
+import { useKeepInViewport } from "./hooks";
+import type { SortSpec } from "../../src/core/types";
 
 interface Props {
   cols: string[];
@@ -8,13 +9,14 @@ interface Props {
 }
 
 export function SortPanel({ cols, sorts, onChange, onClear }: Props) {
+  const keepRef = useKeepInViewport<HTMLDivElement>();
   const update = (i: number, patch: Partial<SortSpec>) =>
     onChange(sorts.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
   const add = () => onChange([...sorts, { field: cols[0], dir: "asc" }]);
   const remove = (i: number) => onChange(sorts.filter((_, idx) => idx !== i));
 
   return (
-    <div className="popover sort-pop" onMouseDown={(e) => e.stopPropagation()}>
+    <div ref={keepRef} className="popover sort-pop" onMouseDown={(e) => e.stopPropagation()}>
       <div className="pop-head">排序</div>
       {sorts.length === 0 && <div className="pop-empty">没有排序</div>}
       <div className="cond-list">

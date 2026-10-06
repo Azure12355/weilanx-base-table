@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import type { FieldDef } from "../../src/base/types";
+import type { FieldDef } from "../../src/core/types";
 import { tagStyle } from "./config";
 import { formatDate, formatNumber } from "./format";
 import { useAutoClose } from "./hooks";
+import { useHost } from "./host";
+import { parseWikiLink } from "../../src/core/links";
 
 const CHECK = "✓";
 
@@ -35,6 +37,8 @@ export function CellPreview({ def, value, colorful }: { def: FieldDef; value: un
       return <span>{formatDate(value, def.dateFormat)}</span>;
     case "link": {
       const url = (value as string) ?? "";
+      const wiki = parseWikiLink(url);
+      if (wiki) return <span className="wikilink">{wiki.label}</span>;
       return (
         <a href={url} target="_blank" rel="noreferrer" className="expand-link">
           {url}
@@ -75,6 +79,7 @@ export function Cell({ def, value, colorful, onCommit }: Props) {
       return <LongTextCell value={value} onCommit={onCommit} />;
     case "text":
     default:
+      if (parseWikiLink(value)) return <WikiCell value={value as string} onCommit={onCommit} />;
       return (
         <div className="cellbox">
           <TextEdit initial={(value as string) ?? ""} onCommit={(t) => onCommit(t === "" ? null : t)} />
@@ -317,9 +322,50 @@ function LongTextCell({ value, onCommit }: { value: unknown; onCommit: (v: unkno
   );
 }
 
+/** [[笔记]] 链接:点击交给宿主打开(Obsidian 跳转笔记,VS Code 在工作区里找同名 .md) */
+function WikiCell({ value, onCommit }: { value: string; onCommit: (v: unknown) => void }) {
+  const host = useHost();
+  const [editing, setEditing] = useState(false);
+  const wiki = parseWikiLink(value);
+  if (editing || !wiki) {
+    return (
+      <div className="cellbox">
+        <TextEdit
+          initial={value}
+          autoFocus={editing}
+          onCommit={(t) => {
+            onCommit(t === "" ? null : t);
+            setEditing(false);
+          }}
+        />
+      </div>
+    );
+  }
+  return (
+    <div className="cellbox cell-link">
+      <a
+        className="wikilink"
+        href="#"
+        title={wiki.target}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          host.post({ type: "openLink", target: wiki.target });
+        }}
+      >
+        {wiki.label}
+      </a>
+      <button className="mini" onClick={() => setEditing(true)} title="编辑">
+        ✎
+      </button>
+    </div>
+  );
+}
+
 function LinkCell({ value, onCommit }: { value: unknown; onCommit: (v: unknown) => void }) {
   const [editing, setEditing] = useState(false);
   const url = (value as string) ?? "";
+  if (!editing && parseWikiLink(url)) return <WikiCell value={url} onCommit={onCommit} />;
   if (editing || !url) {
     return (
       <div className="cellbox">

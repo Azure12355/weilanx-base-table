@@ -1,4 +1,4 @@
-import type { FieldDef } from "../../src/base/types";
+import type { FieldDef } from "../../src/core/types";
 import { Icon } from "./icons";
 
 export type FieldAction =

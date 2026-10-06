@@ -23,6 +23,7 @@
 [![][vscode-shield]][vscode-link]
 [![][typescript-shield]][typescript-link]
 [![][react-shield]][react-link]
+[![][obsidian-shield]][obsidian-link]
 [![][i18n-shield]][i18n-link]
 
 </div>
@@ -38,9 +39,9 @@
 
 # 📊 Weilanx 多维表格
 
-Weilanx 多维表格(Weilanx Base Table)是一个 VS Code 插件,把一个 `.base` 文件变成**多维表格**(类似飞书多维表格 / Airtable):多视图、筛选、排序、分组、内联编辑,全部在编辑器里完成。
+Weilanx 多维表格(Weilanx Base Table)把一个 `.wbase` 文件变成**多维表格**(类似飞书多维表格 / Airtable):多视图、筛选、排序、分组、内联编辑。支持 **VS Code**(以及 Cursor、Windsurf)和 **Obsidian** 桌面端、手机端,两边打开的是同一个文件。
 
-`.base` 文件本质是**纯 JSON**:字段、视图、记录都在一个结构化文档里。对人来说是一张好用的表格;对 AI Agent 来说,`JSON.parse` 一次就能读全,几行代码就能改。
+`.wbase` 文件本质是**纯 JSON**:字段、视图、记录都在一个结构化文档里。对人来说是一张好用的表格;对 AI Agent 来说,`JSON.parse` 一次就能读全,几行代码就能改。
 
 ❤️ 觉得好用?点个 Star 🌟 支持一下!
 
@@ -79,13 +80,20 @@ Weilanx 多维表格(Weilanx Base Table)是一个 VS Code 插件,把一个 `.bas
 
 4. **VS Code 集成**:
 
-- 📂 侧边栏专属目录树,列出工作区内所有 `.base` 文件
+- 📂 侧边栏专属目录树,列出工作区内所有 `.wbase` 文件
 - ⌨️ 快捷键都是 VS Code 原生快捷键,可在「键盘快捷方式」里改键
 - 🌐 中英文界面,跟随 VS Code 显示语言自动切换
 - 📤 导出为 CSV、Excel(`.xls`)或完整 JSON
 - 🎨 自定义文件图标(兼容 Material Icon Theme)
 
-5. **对 Agent 友好**:
+5. **Obsidian**:
+
+- 📱 桌面端和手机端都能用同一套表格界面,自动跟随 Obsidian 主题(亮色、暗色、第三方主题)
+- 🔗 单元格里写 `[[笔记]]` 就能点击跳转;笔记改名时,所有表格里的链接自动更新
+- ⌨️ 在表格里 `Cmd/Ctrl+Z` 撤销、`Cmd/Ctrl+Shift+Z` 重做,不占用 Obsidian 的全局快捷键
+- 🛟 文件损坏(同步冲突、手动改错)时只显示错误提示,不会被覆盖
+
+6. **对 Agent 友好**:
 
 - 🤖 单文件 JSON,每条记录有稳定 `id`,AI Agent 读写零门槛
 - 🔄 文件被外部修改时,打开的表格实时刷新
@@ -95,9 +103,9 @@ Weilanx 多维表格(Weilanx Base Table)是一个 VS Code 插件,把一个 `.bas
 现在大多数人都让 Agent 代劳。把下面这段话粘贴给 **Claude Code**、**Codex**、**Cursor** 或任何能用终端的 Agent:
 
 ```text
-帮我安装 Weilanx Base Table 这个 VS Code 插件。
+帮我安装 Weilanx Base Table 插件(VS Code / Obsidian)。
 按照 https://github.com/Azure12355/weilanx-base-table/blob/main/docs/install-for-agents.md 操作,
-装完确认 "code --list-extensions" 里有 weilanx.weilanx-base-table。
+装完先校验,再告诉我结果。
 ```
 
 也可以自己运行安装脚本(macOS / Linux)。它会自动找到 VS Code、Cursor、Windsurf、Insiders,逐个安装并校验:
@@ -106,17 +114,33 @@ Weilanx 多维表格(Weilanx Base Table)是一个 VS Code 插件,把一个 `.bas
 curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash
 ```
 
+Obsidian 用户把库的路径传进去:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash -s -- --obsidian "/你的/库/路径"
+```
+
 > 只想装到某一个编辑器?在 `bash` 前加上 `BT_EDITOR=cursor`。写给 Agent 的完整步骤、校验和排错见 [`docs/install-for-agents.md`](./docs/install-for-agents.md)。
 
 # 🚀 快速开始
 
+**VS Code**
+
 1. 从最新 Release 下载 [`weilanx-base-table.vsix`](https://github.com/Azure12355/weilanx-base-table/releases/latest/download/weilanx-base-table.vsix),或者自己打包(见 [开发](#-开发))。
 2. VS Code:扩展面板 → `···` → **从 VSIX 安装...**,或运行 `code --install-extension weilanx-base-table.vsix --force`
-3. 打开任意 `.base` 文件(可以先试试 [`examples/选题库.base`](./examples/选题库.base)),或在命令面板运行 **多维表格: 创建多维表格 (.base)**。
+3. 打开任意 `.wbase` 文件(可以先试试 [`examples/选题库.wbase`](./examples/选题库.wbase)),或在命令面板运行 **多维表格: 创建多维表格 (.wbase)**。
+
+**Obsidian**
+
+1. 从[最新 Release](https://github.com/Azure12355/weilanx-base-table/releases/latest) 下载 `main.js`、`manifest.json`、`styles.css`,放进 `<库>/.obsidian/plugins/weilanx-base-table/`;也可以用 [BRAT](https://github.com/TfTHacker/obsidian42-brat) 填入 `Azure12355/weilanx-base-table` 安装。
+2. 在 设置 → 第三方插件 里启用 **Weilanx Base Table**。
+3. 打开任意 `.wbase` 文件,或在命令面板运行 **新建多维表格**。
+
+> **为什么是 `.wbase`?** Obsidian 的核心插件 Bases 占用了 `.base` 扩展名。旧的 `.base` 表格在 VS Code 里照样能打开,右键选择 **转换为 .wbase** 后就能在 Obsidian 里使用。
 
 # 📄 文件格式
 
-一个 `.base` 文件就是这样一份 JSON:
+一个 `.wbase` 文件就是这样一份 JSON:
 
 ```json
 {
@@ -166,9 +190,13 @@ npm test             # 数据层单测
 npm run typecheck
 
 npm run package            # 构建并生成 weilanx-base-table.vsix
+npm run build:obsidian     # Obsidian 插件 -> dist/obsidian/{main.js,manifest.json,styles.css}
+npm run dev:obsidian -- --out "/你的/库/.obsidian/plugins/weilanx-base-table"   # 改动后自动重新构建
 ```
 
-在 VS Code 里按 **F5** 启动「扩展开发宿主」,然后打开 `examples/选题库.base`。
+在 VS Code 里按 **F5** 启动「扩展开发宿主」,然后打开 `examples/选题库.wbase`。
+
+代码结构:`src/core`(格式与修改操作,两端共用)、`webview/src`(表格界面,两端共用)、`src/vscode` 和 `src/obsidian`(各自的宿主外壳)。
 
 # 📝 路线图
 
@@ -176,6 +204,8 @@ npm run package            # 构建并生成 weilanx-base-table.vsix
 - 🔗 多表关联
 - 🧮 公式字段
 - 🌐 表格内部界面(工具栏、面板)英文化
+- 📝 在笔记里用 `![[表格.wbase]]` 嵌入表格(Obsidian)
+- 🏪 上架 Obsidian 社区插件市场
 
 # 🤝 参与贡献
 
@@ -192,6 +222,8 @@ npm run package            # 构建并生成 weilanx-base-table.vsix
 [typescript-link]: https://www.typescriptlang.org/
 [react-shield]: https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black
 [react-link]: https://react.dev/
+[obsidian-shield]: https://img.shields.io/badge/Obsidian-1.5%2B-7C3AED?logo=obsidian&logoColor=white
+[obsidian-link]: https://obsidian.md/
 [i18n-shield]: https://img.shields.io/badge/i18n-English%20%7C%20中文-0088CC
 [i18n-link]: ./README.md
 [release-shield]: https://img.shields.io/github/v/release/Azure12355/weilanx-base-table?logo=github

@@ -1,6 +1,6 @@
 # Weilanx Base Table file format
 
-One file = one table. Extension `.base` (current VS Code plugin) or `.wbase` (newer, shared with Obsidian). UTF-8 JSON, 2-space indent, trailing newline.
+One file = one table. Extension `.wbase` (VS Code plugin 0.18+ and Obsidian) or the older `.base` (VS Code only; Obsidian reserves `.base` for its core Bases plugin). Content is identical. UTF-8 JSON, 2-space indent, trailing newline.
 
 ```json
 {
@@ -23,7 +23,7 @@ Key order in `fields` is the column order. Order of `records` is the default row
 | `date` | `"YYYY-MM-DD"` string | |
 | `number` | number | never a numeric string |
 | `checkbox` | `true` / `false` | |
-| `link` | string (URL) | |
+| `link` | string (URL) | `[[Note]]` / `[[Note|label]]` renders as a note link in Obsidian (also allowed in `text`) |
 
 FieldDef keys:
 

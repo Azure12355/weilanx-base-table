@@ -7,31 +7,30 @@ const DICT = {
     "agent.eyebrow": "For agents",
     "agent.title": "Let your agent install it.",
     "agent.sub": "Paste one prompt into Claude Code, Codex or Cursor. It downloads the latest release, installs it and checks the result.",
-    "agent.p1": "Finds VS Code, Cursor, Windsurf or Insiders on its own",
+    "agent.p1": "Works for VS Code, Cursor, Windsurf and Obsidian",
     "agent.p2": "Verifies the install before reporting back",
     "agent.p3": 'Full steps in <a href="https://github.com/Azure12355/weilanx-base-table/blob/main/docs/install-for-agents.md">install-for-agents.md</a>',
     "agent.manual": "Prefer to install by hand?",
     "agent.tab.prompt": "Prompt",
     "agent.tab.shell": "Shell",
     "agent.shell.c1": "# macOS / Linux: installs into every VS Code based editor it finds",
-    "agent.shell.c2": "# Only one editor",
-    "agent.prompt": `Install the Weilanx Base Table VS Code extension for me.
+    "agent.shell.c2": "# Obsidian: pass your vault path",
+    "agent.prompt": `Install the Weilanx Base Table plugin for me.
 
 1. Follow https://github.com/Azure12355/weilanx-base-table/blob/main/docs/install-for-agents.md
-2. On macOS / Linux, run:
+2. VS Code / Cursor (macOS / Linux):
    curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash
-   Otherwise download releases/latest/download/weilanx-base-table.vsix
-   and run: code --install-extension weilanx-base-table.vsix --force
-3. Verify that "code --list-extensions" contains weilanx.weilanx-base-table,
-   then tell me to run "Developer: Reload Window".`,
-    "title": "Weilanx Base Table · Multidimensional tables for VS Code",
+   Obsidian: add  -s -- --obsidian "<vault path>"  after bash
+3. Verify the install, then tell me to reload the window
+   (VS Code) or restart Obsidian.`,
+    "title": "Weilanx Base Table · Multidimensional tables for VS Code and Obsidian",
     "nav.features": "Features",
     "nav.format": "File format",
     "nav.install": "Install",
     "cta.install": "Install",
     "hero.eyebrow": "VS Code extension",
     "hero.title": "Your tables, in a <em>plain JSON</em> file.",
-    "hero.sub": "Views, filters, grouping and inline editing for .base files in VS Code. Readable by people and AI agents alike.",
+    "hero.sub": "Views, filters, grouping and inline editing in VS Code and Obsidian. One JSON file that people and AI agents both read.",
     "features.title": "Everything a table needs. Nothing it doesn't.",
     "f.group.t": "Views that remember",
     "f.group.d": "Every view keeps its own filters, sorting, grouping, hidden columns and widths. Switch with one click.",
@@ -60,8 +59,8 @@ const DICT = {
     "s1.d": 'Grab the latest build from <a href="https://github.com/Azure12355/weilanx-base-table/releases">GitHub Releases</a>, or package it yourself:',
     "s2.t": "Install from VSIX",
     "s2.d": "Open the Extensions panel, click the ··· menu and choose Install from VSIX. Or use the CLI:",
-    "s3.t": "Open or create a .base file",
-    "s3.d": 'Double-click any .base file, or run "Create Base Table" from the Command Palette. The sidebar lists every table in your workspace.',
+    "s3.t": "Open or create a .wbase file",
+    "s3.d": 'Double-click any .wbase file, or run "Create Base Table" from the Command Palette. In Obsidian, use the ribbon icon or "Create new base table".',
     "closing.title": "Open source, MIT licensed.",
     "closing.sub": "Issues and pull requests are welcome.",
     "foot.source": "Source",
@@ -72,31 +71,29 @@ const DICT = {
     "agent.eyebrow": "给 Agent 用",
     "agent.title": "交给 Agent，一句话装好。",
     "agent.sub": "把下面这段提示词粘贴给 Claude Code、Codex 或 Cursor，它会自己下载最新版本、安装并检查结果。",
-    "agent.p1": "自动找到 VS Code、Cursor、Windsurf 或 Insiders",
+    "agent.p1": "VS Code、Cursor、Windsurf、Obsidian 都能装",
     "agent.p2": "装完先校验，再向你汇报",
     "agent.p3": '完整步骤见 <a href="https://github.com/Azure12355/weilanx-base-table/blob/main/docs/install-for-agents.md">install-for-agents.md</a>',
     "agent.manual": "想自己手动安装？",
     "agent.tab.prompt": "提示词",
     "agent.tab.shell": "命令行",
     "agent.shell.c1": "# macOS / Linux：自动装进本机所有基于 VS Code 的编辑器",
-    "agent.shell.c2": "# 只装到某一个编辑器",
-    "agent.prompt": `帮我安装 Weilanx Base Table 这个 VS Code 插件。
+    "agent.shell.c2": "# Obsidian：传入你的库路径",
+    "agent.prompt": `帮我安装 Weilanx Base Table 插件。
 
 1. 按照 https://github.com/Azure12355/weilanx-base-table/blob/main/docs/install-for-agents.md 操作
-2. macOS / Linux 直接运行：
+2. VS Code / Cursor（macOS / Linux）：
    curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash
-   其他系统下载 releases/latest/download/weilanx-base-table.vsix，
-   再运行：code --install-extension weilanx-base-table.vsix --force
-3. 确认 "code --list-extensions" 里有 weilanx.weilanx-base-table，
-   然后提醒我执行 "Developer: Reload Window"。`,
-    "title": "Weilanx 多维表格 · VS Code 里的多维表格",
+   Obsidian：在 bash 后面加上  -s -- --obsidian "<库路径>"
+3. 装完先校验，再提醒我重载窗口（VS Code）或重启 Obsidian。`,
+    "title": "Weilanx 多维表格 · VS Code 与 Obsidian 里的多维表格",
     "nav.features": "功能",
     "nav.format": "文件格式",
     "nav.install": "安装",
     "cta.install": "安装",
     "hero.eyebrow": "VS Code 插件",
     "hero.title": "多维表格，<br>存成 <em>JSON</em> 文件。",
-    "hero.sub": "在 VS Code 里给 .base 文件做视图、筛选、分组和内联编辑。人能看懂，AI Agent 也能直接读写。",
+    "hero.sub": "在 VS Code 和 Obsidian 里做视图、筛选、分组和内联编辑。一个 JSON 文件，人能看懂，AI Agent 也能直接读写。",
     "features.title": "表格该有的都有，多余的一样没有。",
     "f.group.t": "每个视图各记各的",
     "f.group.d": "筛选、排序、分组、隐藏列、列宽，每个视图单独保存，点一下就切换。",
@@ -125,8 +122,8 @@ const DICT = {
     "s1.d": '从 <a href="https://github.com/Azure12355/weilanx-base-table/releases">GitHub Releases</a> 下载最新版本，或者自己打包：',
     "s2.t": "从 VSIX 安装",
     "s2.d": "打开扩展面板，点 ··· 菜单，选择「从 VSIX 安装」。也可以用命令行：",
-    "s3.t": "打开或新建 .base 文件",
-    "s3.d": "双击任意 .base 文件，或在命令面板运行「创建多维表格」。侧边栏会列出工作区里的所有表格。",
+    "s3.t": "打开或新建 .wbase 文件",
+    "s3.d": "双击任意 .wbase 文件，或在命令面板运行「创建多维表格」。Obsidian 里点左侧栏的表格图标或运行「新建多维表格」。",
     "closing.title": "开源，MIT 协议。",
     "closing.sub": "欢迎提 Issue 和 Pull Request。",
     "foot.source": "源码",

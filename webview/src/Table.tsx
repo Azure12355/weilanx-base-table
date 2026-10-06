@@ -1,9 +1,10 @@
 import { Fragment, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { FieldDef, Row } from "../../src/base/types";
+import type { FieldDef, Row } from "../../src/core/types";
 import { Cell, CellPreview } from "./Cell";
 import type { UIConfig } from "./config";
 import { Caret, Icon } from "./icons";
 import { toClipboard } from "./export";
+import { fixedOrigin } from "./fixed";
 
 /** 行号列宽存在 view.colWidths 的保留键下,可被用户拖拽调整 */
 export const ROWNUM_KEY = "__rownum__";
@@ -278,10 +279,18 @@ export function Table({ fields, cols, rows, config, colWidths, groupField, froze
       ev.clipboardData?.setData("text/plain", text);
       ev.clipboardData?.setData("text/html", html);
     };
-    document.addEventListener("copy", onCopy, { once: true, capture: true });
-    const ok = document.execCommand("copy");
-    document.removeEventListener("copy", onCopy, { capture: true });
-    if (!ok) navigator.clipboard?.writeText(text).catch(() => undefined);
+    // 触屏设备(Obsidian 手机端)没有 Cmd+C,execCommand 也不可靠:优先用异步剪贴板写入两种格式
+    const touch = window.matchMedia?.("(hover: none)").matches;
+    if (touch && navigator.clipboard && typeof ClipboardItem !== "undefined") {
+      navigator.clipboard
+        .write([new ClipboardItem({ "text/plain": new Blob([text], { type: "text/plain" }), "text/html": new Blob([html], { type: "text/html" }) })])
+        .catch(() => navigator.clipboard.writeText(text).catch(() => undefined));
+    } else {
+      document.addEventListener("copy", onCopy, { once: true, capture: true });
+      const ok = document.execCommand("copy");
+      document.removeEventListener("copy", onCopy, { capture: true });
+      if (!ok) navigator.clipboard?.writeText(text).catch(() => undefined);
+    }
     setToast(`已复制 ${selectedRows.length} 条记录`);
     return selectedRows.length;
   };
@@ -299,8 +308,17 @@ export function Table({ fields, cols, rows, config, colWidths, groupField, froze
       return el.tagName === "INPUT" && (el as HTMLInputElement).type !== "checkbox";
     };
     const hasTextSelection = () => !!window.getSelection()?.toString();
+    // 只处理发生在本表格内的事件:Obsidian 里多个表格、编辑器同处一个页面,不能互相劫持。
+    // VS Code webview 整页就是一个表格,焦点落在 body 上时也算本表格。
+    const owns = (e: Event) => {
+      const root = tableRef.current?.closest(".wbt-root");
+      if (!root) return false;
+      const t = e.target as Node | null;
+      return !!t && (root.contains(t) || (t === document.body && root.id === "root"));
+    };
     // 键盘复制;VS Code 宿主也可能通过 execCommand("copy") 触发 copy 事件,两条路径都接住
     const onKey = (e: KeyboardEvent) => {
+      if (!owns(e)) return;
       if (e.key === "Escape" && !isEditing()) {
         setPicked((p) => (p.size ? new Set() : p));
         return;
@@ -311,6 +329,7 @@ export function Table({ fields, cols, rows, config, colWidths, groupField, froze
       }
     };
     const onCopy = (e: ClipboardEvent) => {
+      if (!owns(e)) return;
       if (isEditing() || hasTextSelection() || !selectedRowsRef.current.length) return;
       const { text, html } = toClipboard(colsRef.current, selectedRowsRef.current);
       e.preventDefault();
@@ -326,6 +345,7 @@ export function Table({ fields, cols, rows, config, colWidths, groupField, froze
   }, []);
   const selectedRowsRef = useRef<Row[]>([]);
   selectedRowsRef.current = selectedRows;
+  const tableRef = useRef<HTMLTableElement>(null);
   const colsRef = useRef<string[]>(cols);
   colsRef.current = cols;
 
@@ -393,11 +413,12 @@ export function Table({ fields, cols, rows, config, colWidths, groupField, froze
   );
 
   const expandRow = expand ? rows.find((r) => r.id === expand.id) : null;
+  const expandOrigin = expand ? fixedOrigin(tableRef.current) : { left: 0, top: 0 };
   const expandDef = expand ? fields[expand.col] : null;
 
   return (
     <>
-    <table className={`grid ${wrapClass}`}>
+    <table ref={tableRef} className={`grid ${wrapClass}`}>
       <colgroup>
         {config.showRowNumbers && <col style={{ width: rownumW }} />}
         {cols.map((c) => (
@@ -471,7 +492,8 @@ export function Table({ fields, cols, rows, config, colWidths, groupField, froze
                   className="th-inner"
                   onClick={(e) => {
                     const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
-                    onHeaderMenu(c, r.left, r.bottom + 4);
+                    const o = fixedOrigin(e.currentTarget as HTMLElement);
+                    onHeaderMenu(c, r.left - o.left, r.bottom + 4 - o.top);
                   }}
                 >
                   <Icon name={fields[c]?.type ?? "text"} size={16} className="fico" />
@@ -546,7 +568,7 @@ export function Table({ fields, cols, rows, config, colWidths, groupField, froze
     {expand && expandRow && expandDef && expandDef.type !== "checkbox" && (
       <div
         className="cell-expand"
-        style={{ left: expand.rect.left, top: expand.rect.top, minWidth: expand.rect.width, minHeight: expand.rect.height }}
+        style={{ left: expand.rect.left - expandOrigin.left, top: expand.rect.top - expandOrigin.top, minWidth: expand.rect.width, minHeight: expand.rect.height }}
       >
         <div className={`cell-expand-inner align-${expandDef.align ?? "left"}`}>
           <CellPreview def={expandDef} value={expandRow.values[expand.col]} colorful={config.colorfulTags} />

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import type { BaseTable, FieldDef, ViewDef } from "../../src/base/types";
-import { post, onMessage } from "./vscode";
+import type { BaseTable, FieldDef, ViewDef } from "../../src/core/types";
+import { defaultHost, HostContext, type Host } from "./host";
 import { applyView } from "./filter";
 import { Table } from "./Table";
 import { FilterPanel } from "./FilterPanel";
@@ -16,7 +16,8 @@ import { defaultConfig, ROW_HEIGHT_PX, type UIConfig } from "./config";
 
 type Panel = "filter" | "sort" | "group" | "fields" | null;
 
-export function App() {
+export function App({ host = defaultHost() }: { host?: Host }) {
+  const post = host.post;
   const [table, setTable] = useState<BaseTable | null>(null);
   const [config, setConfig] = useState<UIConfig>(defaultConfig);
   const [viewIdx, setViewIdx] = useState(0);
@@ -90,7 +91,7 @@ export function App() {
   };
 
   useEffect(() => {
-    const off = onMessage((m) => {
+    const off = host.subscribe((m) => {
       if (m.type === "tableData") {
         setTable(m.table);
         setConfig(m.config);
@@ -353,7 +354,8 @@ export function App() {
   } as CSSProperties;
 
   return (
-    <div className="app" style={rootStyle}>
+    <HostContext.Provider value={host}>
+    <div className="app" style={rootStyle} tabIndex={-1}>
       <div className="views">
         {views.map((v, i) => (
           <div
@@ -524,5 +526,6 @@ export function App() {
       )}
       {exportOpen && <ExportModal onExport={handleExport} onCancel={() => setExportOpen(false)} />}
     </div>
+    </HostContext.Provider>
   );
 }

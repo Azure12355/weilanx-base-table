@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { DateFormat, FieldDef, FieldType, NumberStyle } from "../../src/base/types";
+import type { DateFormat, FieldDef, FieldType, NumberStyle } from "../../src/core/types";
 import { Icon } from "./icons";
 
 const TYPES: { value: FieldType; label: string; icon: string }[] = [

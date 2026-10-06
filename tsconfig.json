@@ -13,5 +13,5 @@
     "sourceMap": true
   },
   "include": ["src/**/*", "test/**/*"],
-  "exclude": ["webview", "node_modules", "out"]
+  "exclude": ["webview", "node_modules", "out", "src/obsidian"]
 }

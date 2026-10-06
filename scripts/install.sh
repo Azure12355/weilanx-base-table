@@ -5,6 +5,9 @@
 #
 #   curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash
 #
+# Obsidian: pass the vault path to install the Obsidian plugin instead
+#   curl -fsSL .../install.sh | bash -s -- --obsidian "/path/to/vault"
+#
 # Options (env vars):
 #   BT_EDITOR=cursor   only install into this CLI
 #   BT_VSIX=./x.vsix   install a local .vsix instead of downloading
@@ -15,8 +18,47 @@ ASSET="weilanx-base-table.vsix"
 URL="https://github.com/${REPO}/releases/latest/download/${ASSET}"
 EXT_ID="weilanx.weilanx-base-table"
 
+RELEASE="https://github.com/${REPO}/releases/latest/download"
+OBSIDIAN_ID="weilanx-base-table"
+
 say() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 die() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
+
+# Obsidian 模式:下载 main.js / manifest.json / styles.css 到 <库>/.obsidian/plugins/<id>/ 并启用
+install_obsidian() {
+  local vault="$1"
+  [ -d "$vault" ] || die "Vault not found: $vault"
+  [ -d "$vault/.obsidian" ] || die "$vault is not an Obsidian vault (no .obsidian folder). Open it in Obsidian once first."
+  local dir="$vault/.obsidian/plugins/$OBSIDIAN_ID"
+  mkdir -p "$dir"
+  for f in main.js manifest.json styles.css; do
+    say "Downloading $f"
+    curl -fsSL -o "$dir/$f" "$RELEASE/$f" || die "Download failed: $RELEASE/$f"
+  done
+  local list="$vault/.obsidian/community-plugins.json"
+  if [ -f "$list" ] && grep -q "\"$OBSIDIAN_ID\"" "$list"; then
+    :
+  elif command -v python3 >/dev/null 2>&1; then
+    python3 - "$list" "$OBSIDIAN_ID" <<'PY'
+import json, os, sys
+path, pid = sys.argv[1], sys.argv[2]
+ids = json.load(open(path)) if os.path.exists(path) else []
+if pid not in ids:
+    ids.append(pid)
+json.dump(ids, open(path, "w"), indent=2)
+PY
+  else
+    printf '   could not enable automatically: add "%s" in Settings > Community plugins\n' "$OBSIDIAN_ID"
+  fi
+  say "Installed into $dir"
+  say "Restart Obsidian (or toggle the plugin in Settings > Community plugins), then open any .wbase file."
+  say "If Restricted mode is on, turn it off in Settings > Community plugins first."
+  exit 0
+}
+if [ "${1:-}" = "--obsidian" ]; then
+  [ -n "${2:-}" ] || die "Usage: install.sh --obsidian /path/to/vault"
+  install_obsidian "$2"
+fi
 
 # 1. 找到可用的编辑器 CLI
 candidates=()
@@ -66,4 +108,4 @@ done
 
 [ "$installed" -gt 0 ] || die "Installation failed in every editor."
 say "Done. Installed into $installed editor(s)."
-say "Run 'Developer: Reload Window' in your editor, then open any .base file."
+say "Run 'Developer: Reload Window' in your editor, then open any .wbase file."

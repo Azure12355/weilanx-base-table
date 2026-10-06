@@ -1,0 +1,7 @@
+/* 仅 VS Code webview / 浏览器预览:页面级重置。Obsidian 不加载这份 */
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}

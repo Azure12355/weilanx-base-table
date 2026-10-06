@@ -1,4 +1,4 @@
-import type { DateFormat, FieldDef } from "../../src/base/types";
+import type { DateFormat, FieldDef } from "../../src/core/types";
 
 /** 把数字按字段配置格式化成显示文本 */
 export function formatNumber(value: unknown, def: FieldDef): string {

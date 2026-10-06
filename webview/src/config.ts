@@ -1,4 +1,4 @@
-import type { FieldDef, FieldType } from "../../src/base/types";
+import type { FieldDef, FieldType } from "../../src/core/types";
 
 export interface UIConfig {
   rowHeight: "compact" | "medium" | "tall";

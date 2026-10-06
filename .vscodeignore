@@ -19,3 +19,8 @@ README.zh-CN.md
 scripts/**
 site/**
 skills/**
+dist/**
+manifest.json
+versions.json
+esbuild.obsidian.mjs
+.github/**

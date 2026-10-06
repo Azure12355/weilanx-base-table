@@ -1,4 +1,5 @@
-:root {
+/* 所有样式都收在 .wbt-root 下:VS Code 里它是 #root,Obsidian 里是视图容器,避免影响宿主界面 */
+.wbt-root {
   --bt-border: var(--vscode-widget-border, var(--vscode-panel-border, rgba(128, 128, 128, 0.25)));
   --bt-border-soft: color-mix(in srgb, var(--bt-border) 55%, transparent);
   /* 表头底色:用不透明的编辑器底色,避免滚动时下方内容透出来 */
@@ -9,15 +10,12 @@
   --bt-muted: var(--vscode-descriptionForeground, #999);
 }
 
-* {
+.wbt-root,
+.wbt-root * {
   box-sizing: border-box;
 }
-html,
-body {
-  margin: 0;
+.wbt-root {
   height: 100%;
-}
-body {
   font-family: var(--vscode-font-family, -apple-system, "PingFang SC", sans-serif);
   font-size: var(--bt-font-size, var(--vscode-font-size, 13px));
   color: var(--vscode-foreground, #ddd);
@@ -32,7 +30,11 @@ body {
 .app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
+}
+/* 可聚焦,让点击表格空白处时键盘事件归属到本表格;不显示焦点框 */
+.app:focus {
+  outline: none;
 }
 
 /* ---------- 视图 Tab ---------- */
@@ -1498,4 +1500,58 @@ tbody tr:hover .ops-inner {
 }
 td.rownum:focus-within {
   box-shadow: none;
+}
+
+/* ---------- [[笔记]] 链接 ---------- */
+.wikilink {
+  color: var(--bt-accent);
+  text-decoration: none;
+  cursor: pointer;
+}
+.wikilink:hover {
+  text-decoration: underline;
+}
+
+/* ---------- 触屏(手机 / 平板):没有悬停,复选框常显;HTML5 拖拽不可用,隐藏把手 ---------- */
+@media (hover: none) {
+  tbody td.rownum .rn-num {
+    display: none;
+  }
+  tbody td.rownum .rn-check {
+    display: inline-flex;
+  }
+  tbody td.rownum .rn-check input {
+    width: 18px;
+    height: 18px;
+  }
+  .rownum .rn-grip,
+  tbody tr:hover .rownum .rn-grip {
+    display: none;
+  }
+  tbody td.rownum {
+    cursor: default;
+  }
+}
+
+/* ---------- 窄屏:工具栏换行,弹层不超出屏幕 ---------- */
+@media (max-width: 600px) {
+  .toolbar {
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+  .views {
+    overflow-x: auto;
+  }
+  .popover {
+    min-width: 0 !important;
+    width: min(380px, calc(100vw - 16px));
+  }
+  .modal,
+  .menu {
+    max-width: calc(100vw - 16px);
+  }
+  .pick-bar {
+    bottom: 12px;
+    max-width: calc(100vw - 24px);
+  }
 }

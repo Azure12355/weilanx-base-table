@@ -1,0 +1,10 @@
+{
+  "id": "weilanx-base-table",
+  "name": "Weilanx Base Table",
+  "version": "0.18.0",
+  "minAppVersion": "1.5.0",
+  "description": "Multidimensional tables stored as plain JSON (.wbase): views, filters, sorting, grouping, inline editing and [[note]] links. Works on desktop and mobile.",
+  "author": "Azure12355",
+  "authorUrl": "https://github.com/Azure12355",
+  "isDesktopOnly": false
+}

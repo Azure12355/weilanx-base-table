@@ -1,0 +1,84 @@
+/* Weilanx Base Table · Obsidian 适配层
+   1. 把共享界面使用的 --vscode-* 变量映射到 Obsidian 主题变量,亮暗主题和第三方主题自动跟随
+   2. 还原 Obsidian 对 button / input / select 的全局样式,让表格和 VS Code 版外观一致
+   共享界面样式在打包时整体包进 `body .wbt-root { ... }`,不会影响 Obsidian 其他界面。 */
+
+.wbt-obsidian {
+  --vscode-editor-background: var(--background-primary);
+  --vscode-foreground: var(--text-normal);
+  --vscode-descriptionForeground: var(--text-muted);
+  --vscode-focusBorder: var(--interactive-accent);
+  --vscode-list-hoverBackground: var(--background-modifier-hover);
+  --vscode-editorWidget-background: var(--background-secondary);
+  --vscode-editorWidget-border: var(--background-modifier-border);
+  --vscode-widget-border: var(--background-modifier-border);
+  --vscode-panel-border: var(--background-modifier-border);
+  --vscode-input-background: var(--background-modifier-form-field);
+  --vscode-input-border: var(--background-modifier-border);
+  --vscode-dropdown-background: var(--background-secondary);
+  --vscode-badge-background: var(--background-modifier-border);
+  --vscode-badge-foreground: var(--text-normal);
+  --vscode-button-background: var(--interactive-accent);
+  --vscode-button-foreground: var(--text-on-accent);
+  --vscode-button-secondaryBackground: var(--interactive-normal);
+  --vscode-button-secondaryForeground: var(--text-normal);
+  --vscode-input-foreground: var(--text-normal);
+  --vscode-errorForeground: var(--text-error);
+  --vscode-textLink-foreground: var(--text-accent);
+  --vscode-charts-blue: var(--color-blue);
+  --vscode-charts-green: var(--color-green);
+  --vscode-charts-orange: var(--color-orange);
+  --vscode-charts-purple: var(--color-purple);
+  --vscode-charts-red: var(--color-red);
+  --vscode-charts-yellow: var(--color-yellow);
+  --vscode-font-family: var(--font-interface);
+  --vscode-font-size: var(--font-ui-small);
+  --vscode-editor-font-family: var(--font-monospace);
+}
+
+/* 视图内容区去掉默认内边距,表格自己负责滚动 */
+.workspace-leaf-content[data-type="weilanx-base-table"] > .view-content {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* 还原表单控件到浏览器默认样式;优先级(0,1,2)高于 Obsidian 的通用规则,低于表格组件自身的类选择器 */
+body .wbt-root :is(button, input, select, textarea) {
+  all: revert;
+  box-sizing: border-box;
+}
+
+/* 与 Obsidian 同名的类(.popover 是笔记悬停预览、.menu 是右键菜单……)会被 Obsidian 的样式命中。
+   先在表格作用域里把它们还原,再由后面的共享样式重新定义。
+   优先级 (0,2,1) 与共享样式的 `body .wbt-root .xxx` 相同,本文件在前,所以共享样式总能覆盖它。
+   名单来自对照 Obsidian 1.13 的样式表;Obsidian 升级后如有新的同名类,补进这里。 */
+body .wbt-root :is(.popover, .menu, .menu-item, .modal, .modal-title, .tag, .placeholder, .loading, .active, .selected, .disabled, .number, .value) {
+  all: revert;
+  box-sizing: border-box;
+}
+
+/* 解析失败时的提示 */
+.wbt-error {
+  padding: 24px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.wbt-error h3 {
+  margin: 0 0 8px;
+  color: var(--text-error);
+}
+.wbt-error pre {
+  white-space: pre-wrap;
+  font-size: var(--font-ui-smaller);
+}
+
+/* Obsidian 手机端(含桌面上的「模拟手机」)body 带 is-mobile:与共享样式里 @media (hover: none) 的规则保持一致 */
+body.is-mobile .wbt-root tbody td.rownum .rn-num {
+  display: none;
+}
+body.is-mobile .wbt-root tbody td.rownum .rn-check {
+  display: inline-flex;
+}
+body.is-mobile .wbt-root .rownum .rn-grip {
+  display: none !important;
+}

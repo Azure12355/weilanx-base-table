@@ -1,4 +1,5 @@
-import type { GroupSpec } from "../../src/base/types";
+import { useKeepInViewport } from "./hooks";
+import type { GroupSpec } from "../../src/core/types";
 
 interface Props {
   cols: string[];
@@ -7,8 +8,9 @@ interface Props {
 }
 
 export function GroupPanel({ cols, group, onChange }: Props) {
+  const keepRef = useKeepInViewport<HTMLDivElement>();
   return (
-    <div className="popover group-pop" onMouseDown={(e) => e.stopPropagation()}>
+    <div ref={keepRef} className="popover group-pop" onMouseDown={(e) => e.stopPropagation()}>
       <div className="pop-head">分组</div>
       <div className="cond-list">
         <div className="cond">

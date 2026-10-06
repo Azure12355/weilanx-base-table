@@ -1,4 +1,4 @@
-import type { BaseTable, FieldDef, Row } from "../../src/base/types";
+import type { BaseTable, FieldDef, Row } from "../../src/core/types";
 
 /** 单元格导出文本:多选用「, 」连接,复选用是/空,其余转字符串 */
 export function cellText(value: unknown): string {

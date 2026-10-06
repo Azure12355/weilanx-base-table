@@ -1,4 +1,4 @@
-import type { FieldDef, FieldType, FilterCond, Row, SortSpec, ViewDef } from "../../src/base/types";
+import type { FieldDef, FieldType, FilterCond, Row, SortSpec, ViewDef } from "../../src/core/types";
 
 /** 对一个视图应用多条件筛选(AND) + 多字段排序 */
 export function applyView(

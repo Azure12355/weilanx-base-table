@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Weilanx Base Table · Multidimensional tables for VS Code</title>
-  <meta name="description" content="Views, filters, grouping and inline editing for .base files in VS Code. Plain JSON underneath, readable by humans and AI agents." />
+  <meta name="description" content="Multidimensional tables for VS Code and Obsidian: views, filters, grouping and inline editing. Plain JSON underneath, readable by humans and AI agents." />
   <meta name="theme-color" content="#0c0d10" media="(prefers-color-scheme: dark)" />
   <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)" />
   <meta property="og:title" content="Weilanx Base Table" />
@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/latin.css" />
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.1" defer></script>
-  <link rel="stylesheet" href="styles.css?v=5" />
+  <link rel="stylesheet" href="styles.css?v=6" />
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -50,7 +50,7 @@
       <div class="hero-copy">
         <p class="eyebrow" data-i18n="hero.eyebrow">VS Code extension</p>
         <h1 data-i18n-html="hero.title">Your tables, in a <em>plain JSON</em> file.</h1>
-        <p class="hero-sub" data-i18n="hero.sub">Views, filters, grouping and inline editing for .base files in VS Code. Readable by people and AI agents alike.</p>
+        <p class="hero-sub" data-i18n="hero.sub">Views, filters, grouping and inline editing in VS Code and Obsidian. One JSON file that people and AI agents both read.</p>
         <div class="hero-ctas">
           <a class="btn btn-primary" href="#agent"><i class="ph ph-download-simple"></i><span data-i18n="cta.install">Install</span></a>
           <a class="btn btn-ghost" href="https://github.com/Azure12355/weilanx-base-table"><i class="ph ph-github-logo"></i><span>GitHub</span></a>
@@ -75,7 +75,7 @@
           <h2 class="section-title" data-i18n="agent.title">Let your agent install it.</h2>
           <p class="section-sub" data-i18n="agent.sub">Paste one prompt into Claude Code, Codex or Cursor. It downloads the latest release, installs it and checks the result.</p>
           <ul class="agent-points">
-            <li><i class="ph ph-magnifying-glass"></i><span data-i18n="agent.p1">Finds VS Code, Cursor, Windsurf or Insiders on its own</span></li>
+            <li><i class="ph ph-magnifying-glass"></i><span data-i18n="agent.p1">Works for VS Code, Cursor, Windsurf and Obsidian</span></li>
             <li><i class="ph ph-seal-check"></i><span data-i18n="agent.p2">Verifies the install before reporting back</span></li>
             <li><i class="ph ph-book-open-text"></i><span data-i18n-html="agent.p3">Full steps in <a href="https://github.com/Azure12355/weilanx-base-table/blob/main/docs/install-for-agents.md">install-for-agents.md</a></span></li>
           </ul>
@@ -91,8 +91,8 @@
           <pre class="agent-pane" id="agent-shell" role="tabpanel" aria-labelledby="tab-shell" hidden><code><span class="c" data-i18n="agent.shell.c1"># macOS / Linux: installs into every VS Code based editor it finds</span>
 curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash
 
-<span class="c" data-i18n="agent.shell.c2"># Only one editor</span>
-curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | BT_EDITOR=cursor bash</code></pre>
+<span class="c" data-i18n="agent.shell.c2"># Obsidian: pass your vault path</span>
+curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/scripts/install.sh | bash -s -- --obsidian "/path/to/vault"</code></pre>
         </div>
       </div>
     </section>
@@ -167,7 +167,7 @@ curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/
           <img src="assets/grid.png" loading="lazy" width="1440" height="820" alt="The same file rendered as a table" />
         </figure>
         <div class="frame pane pane-code" id="pane-agent" role="tabpanel" aria-labelledby="tab-agent" hidden>
-          <div class="code-bar"><span>选题库.base</span><button class="copy-btn" type="button" data-copy="code-json"><i class="ph ph-copy"></i><span data-i18n="copy">Copy</span></button></div>
+          <div class="code-bar"><span>选题库.wbase</span><button class="copy-btn" type="button" data-copy="code-json"><i class="ph ph-copy"></i><span data-i18n="copy">Copy</span></button></div>
 <pre id="code-json"><code>{
   <span class="k">"fields"</span>: {
     <span class="k">"标题"</span>: { <span class="k">"type"</span>: <span class="s">"text"</span>, <span class="k">"primary"</span>: <span class="b">true</span> },
@@ -218,8 +218,8 @@ curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/
         <li class="reveal">
           <i class="ph ph-table step-icon"></i>
           <div>
-            <h3 data-i18n="s3.t">Open or create a .base file</h3>
-            <p data-i18n="s3.d">Double-click any .base file, or run "Create Base Table" from the Command Palette. The sidebar lists every table in your workspace.</p>
+            <h3 data-i18n="s3.t">Open or create a .wbase file</h3>
+            <p data-i18n="s3.d">Double-click any .wbase file, or run "Create Base Table" from the Command Palette. In Obsidian, use the ribbon icon or "Create new base table".</p>
           </div>
         </li>
       </ol>
@@ -250,6 +250,6 @@ curl -fsSL https://raw.githubusercontent.com/Azure12355/weilanx-base-table/main/
     </div>
   </footer>
 
-  <script src="main.js?v=5"></script>
+  <script src="main.js?v=6"></script>
 </body>
 </html>
